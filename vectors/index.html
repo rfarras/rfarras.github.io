@@ -16,9 +16,13 @@
         les fòrmules matemàtiques en una pàgina web. Mathjax utillitza dos tipus de llenguatges matemàtics:
         Tex/LaTeX I MathML, TeX es pronuncia Tech i LaTeX significa Lamport que és el cognom de la persona que va modificar
         TeX per fer-lo més fàcil, MathML és un llenguatge més modern semblant al HTML, ML significa Markup language,
-        llenguatge de marques.
+        llenguatge de marques. MathML és olt molt semblant a HTML,però és més llarg que LaTeX.
         */
         window.MathJax = {
+             /* Crea una variable global anomenada window.MathJax que es carregarà quan es carregui la pagina web i farà que quan 
+             tenim les fòrmules en línia, és a dir, text normal i una fórmula en la mateixa línia hem d'escriure al principi i al finaal 1 o 2 dòlars.
+             Pot ser a la mateixa línia o en el mateix paràgraf sense salts de línia ni centrats.
+             */
             tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
             svg: { fontCache: 'global' }
         };
