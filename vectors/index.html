@@ -1,166 +1,179 @@
 <!DOCTYPE html>
+
 <html lang="ca">
-<head> 
-     <!--Conté la informació pel programador i és obligatori la secció head-->
-<meta charset="UTF-8">
-    <!-- És un document html, escrit en català i amb un conjunt de caràcters UTF-8 perquè accepti els accents i ç. -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- La línia anterior és una metainformació pel programador que indica que el contingut s'adapti a l'ample de la pantalla-->
-<title>Suma de Vectors Nàutics: Vaixell, Vent i Corrent</title>
-    <!-- Title és el títol de la pestanya del navegador, no del document-->
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-     <!-- El codi anterior afegeix una biblioteca externa CDN (Content Delivery Network) que és de tipus javascript 
-    perquè acaba en script. Cada biblioteca externa serveix per una cosa. La biblioteca mathjax serveix per escriure 
-    fòrmules matemàtiques i símbols matemàtics. Altres biblioteques que utilitzarem durant el curs: bootstrap5 per els menús desplegables,
-    fontawesome per dibuixar símbols predissenyats que es troben en els menús desplegables, p5.js és una biblioteca que serveix per 
-    dibuixar de forma fàcil, ml5.js significa machine learning o aprenentatge per màquina i ens pot servir per reconéixer cares, gestos,
-    poses... El número 5 prové de processing o proce55ing que és com es deia als antecessors d'aquest programa. Processing és anterior a arduino
-    i arduino deriva d'ell. Podem fer robòtica emprant en llenguatge <a href="https://processing.org"> processing </a> amb la biblioteca arduino .-->
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        line-height: 1.6;
-    }
-    h2 {
-        color: #333;
-    }
-    input[type="number"] {
-        width: 70px;
-        margin-right: 10px;
-    }
-    button {
-        padding: 8px 16px;
-        margin-top: 10px;
-        cursor: pointer;
-    }
-    .result {
-        margin-top: 20px;
-        font-family: monospace;
-        background-color: #f0f0f0;
-        padding: 10px;
-        border-radius: 5px;
-    }
-    canvas {
-        border: 1px solid #ccc;
-        margin-top: 20px;
-        background-color: #f9f9f9;
-    }
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suma de Vectors Nàutics: Vaixell, Vent i Corrent</title>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        h2 { color: #333; }
+        input[type="number"] { width: 70px; margin-right: 10px; }
+        button { padding: 8px 16px; margin-top: 10px; cursor: pointer; }
+        .result { margin-top: 20px; background-color: #f0f0f0; padding: 10px; border-radius: 5px; }
+        canvas { border: 1px solid #ccc; margin-top: 20px; background-color: #f9f9f9; }
+        .teoria { background: #eef; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-<h1>Suma de Vectors Nàutics: Vaixell, Vent i Corrent</h1>
+    <h1>Suma de Vectors Nàutics: Vaixell, Vent i Corrent</h1>
+
+
+<div class="teoria">
+    <h2>Recordatori Teòric</h2>
+    <p>Per un vector de mòdul $V$ i rumb $\theta$ (en graus):</p>
+    <ul>
+        <li>$\theta_{rad} = \theta \cdot \pi / 180$</li>
+        <li>Component horitzontal (X): $V_x = V \cdot \sin(\theta_{rad})$</li>
+        <li>Component vertical (Y): $V_y = V \cdot \cos(\theta_{rad})$</li>
+    </ul>
+    <p>Suma de vectors:</p>
+    <ul>
+        <li>$R_x = V_x + W_x + C_x$</li>
+        <li>$R_y = V_y + W_y + C_y$</li>
+    </ul>
+    <p>Vector resultant:</p>
+    <ul>
+        <li>$|R| = \sqrt{R_x^2 + R_y^2}$</li>
+        <li>$\theta_R = \arctan\left(\frac{R_x}{R_y}\right)$</li>
+    </ul>
+</div>
+
 <p>Introdueix els vectors (rumb en graus i velocitat en nusos) i clica "Calcula".</p>
+
 <div>
-    <h2>Vector del Vaixell (\( \vec{V} \))</h2>
-    Rumb: <input type="number" id="vRumb" value="146">° 
+    <h2>Vector del Vaixell ($\vec{V}$)</h2>
+    Rumb: <input type="number" id="vRumb" value="146">°
     Velocitat: <input type="number" id="vVel" value="10"> nusos
 </div>
+
 <div>
-    <h2>Vector del Vent (\( \vec{W} \))</h2>
-    Rumb: <input type="number" id="wRumb" value="240">° 
+    <h2>Vector del Vent ($\vec{W}$)</h2>
+    Rumb: <input type="number" id="wRumb" value="240">°
     Velocitat: <input type="number" id="wVel" value="5"> nusos
 </div>
+
 <div>
-    <h2>Vector del Corrent (\( \vec{C} \))</h2>
-    Rumb: <input type="number" id="cRumb" value="30">° 
+    <h2>Vector del Corrent ($\vec{C}$)</h2>
+    Rumb: <input type="number" id="cRumb" value="30">°
     Velocitat: <input type="number" id="cVel" value="3"> nusos
 </div>
+
 <button onclick="calculaVectors()">Calcula</button>
+
 <div id="result" class="result" style="display:none;"></div>
 <canvas id="canvas" width="500" height="500" style="display:none;"></canvas>
+
 <script>
-function calculaVectors() {
-    // Obtenim els valors
-    const vRumb = parseFloat(document.getElementById('vRumb').value);
-    const vVel = parseFloat(document.getElementById('vVel').value);
-    const wRumb = parseFloat(document.getElementById('wRumb').value);
-    const wVel = parseFloat(document.getElementById('wVel').value);
-    const cRumb = parseFloat(document.getElementById('cRumb').value);
-    const cVel = parseFloat(document.getElementById('cVel').value);
+    function calculaVectors() {
+        const vRumb = parseFloat(document.getElementById('vRumb').value);
+        const vVel = parseFloat(document.getElementById('vVel').value);
+        const wRumb = parseFloat(document.getElementById('wRumb').value);
+        const wVel = parseFloat(document.getElementById('wVel').value);
+        const cRumb = parseFloat(document.getElementById('cRumb').value);
+        const cVel = parseFloat(document.getElementById('cVel').value);
 
-    // Convertim a radians
-    const degToRad = Math.PI / 180;
-    const vRad = vRumb * degToRad;
-    const wRad = wRumb * degToRad;
-    const cRad = cRumb * degToRad;
+        const degToRad = Math.PI / 180;
+        const vRad = vRumb * degToRad;
+        const wRad = wRumb * degToRad;
+        const cRad = cRumb * degToRad;
 
-    // Components cartesianes
-    const Vx = vVel * Math.sin(vRad);
-    const Vy = vVel * Math.cos(vRad);
-    const Wx = wVel * Math.sin(wRad);
-    const Wy = wVel * Math.cos(wRad);
-    const Cx = cVel * Math.sin(cRad);
-    const Cy = cVel * Math.cos(cRad);
+        const Vx = vVel * Math.sin(vRad);
+        const Vy = vVel * Math.cos(vRad);
+        const Wx = wVel * Math.sin(wRad);
+        const Wy = wVel * Math.cos(wRad);
+        const Cx = cVel * Math.sin(cRad);
+        const Cy = cVel * Math.cos(cRad);
 
-    // Suma de components
-    const Rx = Vx + Wx + Cx;
-    const Ry = Vy + Wy + Cy;
+        const Rx = Vx + Wx + Cx;
+        const Ry = Vy + Wy + Cy;
+        const Rmag = Math.sqrt(Rx**2 + Ry**2);
+        let Rdeg = Math.atan2(Rx, Ry) * 180 / Math.PI;
+        if (Rdeg < 0) Rdeg += 360;
 
-    // Magnitud i rumb del vector resultant
-    const Rmag = Math.sqrt(Rx**2 + Ry**2);
-    let Rdeg = Math.atan2(Rx, Ry) * 180 / Math.PI;
-    if (Rdeg < 0) Rdeg += 360;
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <h2>Resultats pas a pas</h2>
 
-    // Mostrar resultats
-    const resultDiv = document.getElementById('result');
-    resultDiv.style.display = 'block';
-    resultDiv.innerHTML =
-    `<h2>Resultats</h2>
-    <p><strong>Components:</strong></p>
-    <ul>
-        <li>V: (${Vx.toFixed(3)}, ${Vy.toFixed(3)})</li>
-        <li>W: (${Wx.toFixed(3)}, ${Wy.toFixed(3)})</li>
-        <li>C: (${Cx.toFixed(3)}, ${Cy.toFixed(3)})</li>
-        <li>Resultant R: (${Rx.toFixed(3)}, ${Ry.toFixed(3)})</li>
-    </ul>
-    <p><strong>Magnitud del vector resultant:</strong> ${Rmag.toFixed(2)} nusos</p>
-    <p><strong>Rumb del vector resultant:</strong> ${Rdeg.toFixed(2)}°</p>`;
+            <p><strong>Conversió a radians:</strong></p>
+            <ul>
+                <li>$${vRumb}^\\circ \\cdot \\pi/180 = ${(vRad).toFixed(3)} \\, rad$</li>
+                <li>$${wRumb}^\\circ \\cdot \\pi/180 = ${(wRad).toFixed(3)} \\, rad$</li>
+                <li>$${cRumb}^\\circ \\cdot \\pi/180 = ${(cRad).toFixed(3)} \\, rad$</li>
+            </ul>
 
-    // Dibuxar vectors en canvas
-    const canvas = document.getElementById('canvas');
-    canvas.style.display = 'block';
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+            <p><strong>Components (usant sin i cos):</strong></p>
+            <ul>
+                <li>$V_x = ${vVel} \\cdot \\sin(${vRumb}^\\circ) = ${Vx.toFixed(3)}$</li>
+                <li>$V_y = ${vVel} \\cdot \\cos(${vRumb}^\\circ) = ${Vy.toFixed(3)}$</li>
+                <li>$W_x = ${wVel} \\cdot \\sin(${wRumb}^\\circ) = ${Wx.toFixed(3)}$</li>
+                <li>$W_y = ${wVel} \\cdot \\cos(${wRumb}^\\circ) = ${Wy.toFixed(3)}$</li>
+                <li>$C_x = ${cVel} \\cdot \\sin(${cRumb}^\\circ) = ${Cx.toFixed(3)}$</li>
+                <li>$C_y = ${cVel} \\cdot \\cos(${cRumb}^\\circ) = ${Cy.toFixed(3)}$</li>
+            </ul>
 
-    // Centre del canvas
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
+            <p><strong>Suma de components:</strong></p>
+            <ul>
+                <li>$R_x = ${Vx.toFixed(3)} + ${Wx.toFixed(3)} + ${Cx.toFixed(3)} = ${Rx.toFixed(3)}$</li>
+                <li>$R_y = ${Vy.toFixed(3)} + ${Wy.toFixed(3)} + ${Cy.toFixed(3)} = ${Ry.toFixed(3)}$</li>
+            </ul>
 
-    // Escala per dibuixar
-    const scale = 15; // 1 nus = 15 pixels aprox
+            <p><strong>Mòdul (teorema de Pitàgores):</strong></p>
+            <p>$|R| = \\sqrt{(${Rx.toFixed(3)})^2 + (${Ry.toFixed(3)})^2} = ${Rmag.toFixed(2)} \\, nusos$</p>
 
-    // Funció per dibuixar fletxa
-    function drawVector(x, y, color, label) {
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + x*scale, cy - y*scale);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        // Cap de fletxa
-        const angle = Math.atan2(-y, x);
-        const headLength = 10;
-        ctx.beginPath();
-        ctx.moveTo(cx + x*scale, cy - y*scale);
-        ctx.lineTo(cx + x*scale - headLength*Math.cos(angle - Math.PI/6),
-                   cy - y*scale + headLength*Math.sin(angle - Math.PI/6));
-        ctx.lineTo(cx + x*scale - headLength*Math.cos(angle + Math.PI/6),
-                   cy - y*scale + headLength*Math.sin(angle + Math.PI/6));
-        ctx.lineTo(cx + x*scale, cy - y*scale);
-        ctx.fillStyle = color;
-        ctx.fill();
-        // Label
-        ctx.fillStyle = color;
-        ctx.font = "14px Arial";
-        ctx.fillText(label, cx + x*scale + 5, cy - y*scale - 5);
+            <p><strong>Rumb (funció arctan):</strong></p>
+            <p>$\\theta_R = \\arctan\\left(\\frac{${Rx.toFixed(3)}}{${Ry.toFixed(3)}}\\right) = ${Rdeg.toFixed(2)}^\\circ$</p>
+        `;
+        MathJax.typeset();
+
+        const canvas = document.getElementById('canvas');
+        canvas.style.display = 'block';
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const cx0 = canvas.width/2;
+        const cy0 = canvas.height/2;
+        const scale = 15;
+
+        function drawVector(x, y, color, label) {
+            ctx.beginPath();
+            ctx.moveTo(cx0, cy0);
+            ctx.lineTo(cx0 + x*scale, cy0 - y*scale);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            const angle = Math.atan2(-y, x);
+            const headLength = 10;
+            ctx.beginPath();
+            ctx.moveTo(cx0 + x*scale, cy0 - y*scale);
+            ctx.lineTo(cx0 + x*scale - headLength*Math.cos(angle - Math.PI/6),
+                       cy0 - y*scale + headLength*Math.sin(angle - Math.PI/6));
+            ctx.lineTo(cx0 + x*scale - headLength*Math.cos(angle + Math.PI/6),
+                       cy0 - y*scale + headLength*Math.sin(angle + Math.PI/6));
+            ctx.lineTo(cx0 + x*scale, cy0 - y*scale);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            ctx.fillStyle = color;
+            ctx.font = "14px Arial";
+            ctx.fillText(label, cx0 + x*scale + 5, cy0 - y*scale - 5);
+        }
+
+        drawVector(Vx, Vy, 'blue', 'V');
+        drawVector(Wx, Wy, 'green', 'W');
+        drawVector(Cx, Cy, 'orange', 'C');
+        drawVector(Rx, Ry, 'red', 'R');
     }
-
-    drawVector(Vx, Vy, 'blue', 'V');
-    drawVector(Wx, Wy, 'green', 'W');
-    drawVector(Cx, Cy, 'orange', 'C');
-    drawVector(Rx, Ry, 'red', 'R');
-}
 </script>
+
 </body>
 </html>
