@@ -1,4 +1,6 @@
-<!--Aquest codi és un HTML i es diu index, html perquè tots els navegadors busquen inex.html per obrir-lo-->
+<!--Aquest codi és un HTML i es diu index, html perquè tots els navegadors busquen inex.html per obrir-lo. En aqust codi 
+html canviaré les fórmules per canviar la cdirecta en cinversa. He de canviar el text d'entrada i ara les variables no seran q1 ni q2, sinó x,y i 
+mantinc a1 i a2 i obtindré com a resultat q1 i q2.-->
 <!DOCTYPE html>
 
 <html lang="ca">
@@ -36,14 +38,15 @@ Charset vol dir character set, és el "set" que vol dir conjunt de "characters" 
     }
 
 
-    .equation {
+    .equation { /*Equation amb un punt davant significaque és una classe o class que pot repetir-se diverses vegades en el codi. Si jo faig una classe la puc repetir, 
+      si faig un identificador seria un # i no es pot repetir. Per exemple #output només hi ha un output. També pot haver només 1 canvas
 
       margin: 20px 0;
 
     }
 
 
-    .results {
+    .results { /* tots els resultats sortiran en negreta perquè és una classe que fa negreta*/
 
       font-weight: bold;
 
@@ -71,7 +74,7 @@ Charset vol dir character set, és el "set" que vol dir conjunt de "characters" 
 
 <body>
 
-  <h1>Càlcul de la posició d'un robot amb dos braços</h1>
+  <h1>Càlcul dels angles d'un robot amb dos braços</h1>
 
   <div>
 
@@ -85,17 +88,17 @@ Charset vol dir character set, és el "set" que vol dir conjunt de "characters" 
     <input type="number" id="a2" value="0.5" step="0.1"><br><br>
 
 
-    <label for="q1">Angle del primer braç (q₁, en graus):</label>
+    <label for="x">Posició final x (en metres):</label>
 
-    <input type="number" id="q1" value="45" step="0.1"><br><br>
-
-
-    <label for="q2">Angle del segon braç (q₂, en graus):</label>
-
-    <input type="number" id="q2" value="30" step="0.1"><br><br>
+    <input type="number" id="x" value="2.2" step="0.1"><br><br>
 
 
-    <button onclick="calculatePosition()">Calcula la posició</button>
+    <label for="y"> Posició final y (en metres):</label>
+
+    <input type="number" id="y" value="1.8" step="0.1"><br><br>
+
+
+    <button onclick="calculateAngles()">Calcula els angles</button>
 
   </div>
 
@@ -106,12 +109,14 @@ Charset vol dir character set, és el "set" que vol dir conjunt de "characters" 
 
 <script>
 
-function calculatePosition() {
+function calculateAngles() {
 
   // Agafar les dades introduïdes per l'usuari
 
   let a1 = parseFloat(document.getElementById('a1').value);
-
+//Let significa variables, a1 és el nom de la variable que hem triat. 
+//Parsefloat és una acció que converteix el que ha posat l'usuari  en un floating point number, o número decimal
+//getElementByld agafa (get) l'element que té l'identificador a1 i el guardarà a la variable a1. 
   let a2 = parseFloat(document.getElementById('a2').value);
 
   let q1_deg = parseFloat(document.getElementById('q1').value); // Grados
