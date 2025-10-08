@@ -43,7 +43,10 @@
          Els codis de colors tenen tres valors hexadecimal que van del 00 fins FF,és a dir,que tinc una combinació que va desdel 000000 fins FFFFFF.
          Els dos primers digits són el color vermell, els dos següents l verd, i els últims dos són blaus.
          Recordar rgb. Tenim 256 elevat a la 3 =16 milions 700 mil colors diferents.
-         El color es pot expressar en decimal i hexadecimal per exemple #FF0000 és 255,0,0 es pot expressar d'una altra manera.*/
+         El color es pot expressar en decimal i hexadecimal per exemple #FF0000 és 255,0,0 es pot expressar d'una altra manera?
+         A vegades noms en angles com red o noms que puc trobar amb color names html en google. h2 de la línia 54 controla el h2 
+         que es troba a la línia 68 i el #333 és el color gris. LLavor que fa la línia 54 i la línia 58? Fa que el títol de la línia
+         68 sigui gris*/*/
         
                h2 { color: #333; }
         input[type="number"] { width: 70px; margin-right: 10px; }
@@ -51,12 +54,23 @@
          no accepta lletres com podem veure a la línia 56 i a la línia 99,100,105. El input és com una caixa de text per a que escrigui l'usuari i tindrà  
          una amplada definida a la línia 56 amb css width que és amplada en anglès. */
         button { padding: 8px 16px; margin-top: 10px; cursor: pointer; }
-         /* A la 63 
-         també existeix margin-bottom,*/
+         /* A la 63 la configuració del botó o de tots els botons que està a la 114 i que ens permet
+        calcular quan clico. Aquest botó tè padding o marge interior, quan hi ha dos números, 8 píxels i 16 píxels, 
+        si hi ha un número significa que els marges estan pels 4 costats i són iguals a aquests números,
+        si hi ha dos números el primer número es el mateix marge adalt i abaix, i el segon número és a la dreta i a la esquerra,
+        en aquest cas 8 píxels adalt i abaix i 16 píxels a dreta i esquerra. Si hi hagues tres números el primer és adalt, 
+        el segon dreta i esquerra i el tercer número és a baix, margin top és un altre forma de regular el marge superior, 
+        també existeix margin-bottom, margin-right i margin-left. Cursor pointer és que es vegui el cursor dins 
+        del text box o caixa de text.*/
         .result { margin-top: 20px; background-color: #f0f0f0; padding: 10px; border-radius: 5px; }
-         /* Result té un punt davant que significa que són de la mateixa classe que és un objecte del que podem tenir diverses instànciesn */
+         /* Result té un punt davant que significa que són de la mateixa classe que és un objecte del que podem tenir diverses instàncies o objectes
+        de la mateixa classe, vol dir que puc afectar a diferents zones que es diguin results, és a dir, class="result" 
+        que es troba a la línia 126 i que contindra diferent resultats, la línia 72 dona estil a la líi 126 i
+        fa que els resultats tinguin un marge superior de 20 píxels un color de fons gris, un marge intern de 10 píxels
+        i un radi de la zona grisa de resultats de les cantonades de 5 píxels*/
         canvas { border: 1px solid #ccc; margin-top: 20px; background-color: #f9f9f9; }
-         /* Canvas és*/
+         /* Canvas és l'àrea de dibuix on surten els vectors i té una cantonada de 1 píxel de gruix sòlid 
+        de color gris i un marge superior de 20 píxels i un fons grisos i es refereix al canvas que estroba a la línia 131*/
         .teoria { background: #eef; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
     </style>
 </head>
