@@ -34,12 +34,29 @@
         body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
          /*Hi ha tres grans famílies de lletres sans-serif, serif i monospace. 
          Serif en francès o internacionalment, serifada o amb adornaments, és quan una lletra té uns remats
-         Sans-serif, significa lletra monospaciada que ocupa cada lletra el mateix amb, és útil per codi.*/
+         Sans-serif, significa lletra monospaciada que ocupa cada lletra el mateix amb, és útil per codi.
+         Model de  caixes css o box model css, en el box model tenim una capa al voltant del border es troba el margin. Margin, border i padding son propietats css(propieties) 
+         que van seguides de dos punts i un valor o value en píxels.
+         Tots els css són iguals, primer es posa el nom de la etiqueta html o tag a la qual volem donar-li un o diversos estils, per exemple h2 o button o canvas...
+         Després del tag es posa una clau tipus "curly bracket" i a sota es posa propietat1; i en la línia següent propietat2:valor2;
+         si la propietat és color el valor és #333. El número #333 no és un número decimal, és un número hexadecimal amb base 16.
+         Els codis de colors tenen tres valors hexadecimal que van del 00 fins FF,és a dir,que tinc una combinació que va desdel 000000 fins FFFFFF.
+         Els dos primers digits són el color vermell, els dos següents l verd, i els últims dos són blaus.
+         Recordar rgb. Tenim 256 elevat a la 3 =16 milions 700 mil colors diferents.
+         El color es pot expressar en decimal i hexadecimal per exemple #FF0000 és 255,0,0 es pot expressar d'una altra manera.*/
+        
                h2 { color: #333; }
         input[type="number"] { width: 70px; margin-right: 10px; }
+        /* input és una etiqueta que permet l'entrada de dades per l'usuari i al ser de tipus number només accepta números,
+         no accepta lletres com podem veure a la línia 56 i a la línia 99,100,105. El input és com una caixa de text per a que escrigui l'usuari i tindrà  
+         una amplada definida a la línia 56 amb css width que és amplada en anglès. */
         button { padding: 8px 16px; margin-top: 10px; cursor: pointer; }
+         /* A la 63 
+         també existeix margin-bottom,*/
         .result { margin-top: 20px; background-color: #f0f0f0; padding: 10px; border-radius: 5px; }
+         /* Result té un punt davant que significa que són de la mateixa classe que és un objecte del que podem tenir diverses instànciesn */
         canvas { border: 1px solid #ccc; margin-top: 20px; background-color: #f9f9f9; }
+         /* Canvas és*/
         .teoria { background: #eef; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
     </style>
 </head>
