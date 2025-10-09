@@ -65,12 +65,19 @@
         .result { margin-top: 20px; background-color: #f0f0f0; padding: 10px; border-radius: 5px; }
          /* Result té un punt davant que significa que són de la mateixa classe que és un objecte del que podem tenir diverses instàncies o objectes
         de la mateixa classe, vol dir que puc afectar a diferents zones que es diguin results, és a dir, class="result" 
-        que es troba a la línia 126 i que contindra diferent resultats, la línia 72 dona estil a la líi 126 i
+        que es troba a la línia 126 i que contindra diferent resultats, la línia 72 dona estil a la línia 126 i
         fa que els resultats tinguin un marge superior de 20 píxels un color de fons gris, un marge intern de 10 píxels
         i un radi de la zona grisa de resultats de les cantonades de 5 píxels*/
         canvas { border: 1px solid #ccc; margin-top: 20px; background-color: #f9f9f9; }
          /* Canvas és l'àrea de dibuix on surten els vectors i té una cantonada de 1 píxel de gruix sòlid 
-        de color gris i un marge superior de 20 píxels i un fons grisos i es refereix al canvas que estroba a la línia 131*/
+         de color gris i un marge superior de 20 píxels i un fons grisos i es refereix al canvas que es troba a la línia 124.
+         La línia superior controla la línia 125, com és el canvas: si ens fixem està buida perquè ente <canvas> i <canvas/> no hi ha res a més diu que l'style 
+         es displaynone, és a dir que no es vegi.
+         Els bordes tenen un guix de un píxel, és sòlid, perquè podria ser puntejat amb la paraula dotted, podria 
+         també double i veuríem  un borde al voltant del primer. Podríem posar el margin d'una altra manera? margin:20px 0 0 0. Aquest color de fons és 
+         gris perquè augmento rgb alhora i de a mateixa manera. Com podria fer el background-color d'una altra manera?
+         F9 és un número hexadecimal i en binari és 11111001.
+         El número és decimal i si vull passar-lo a binari, he de dividir entre 2 com vam aprendre a 4t. */
         .teoria { background: #eef; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
     </style>
 </head>
