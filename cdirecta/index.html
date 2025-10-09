@@ -52,19 +52,14 @@ Charset vol dir character set, és el "set" que vol dir conjunt de "characters" 
       /* És una classe que no s'utilita de moment, sortiria la lletra en negreta*/
 
       font-weight: bold;
-
     }
-
-
     /* Oculta els elements de sortida per defecte */
-
     #output, #robotCanvas {
-
+     
       display: none;
 /* Output i robotCanvas tenen un hastag davant */
     }
-
-
+    
     canvas {
 
       border: 1px solid black;
@@ -82,8 +77,9 @@ Charset vol dir character set, és el "set" que vol dir conjunt de "characters" 
   <div>
 
     <label for="a1">Longitud del primer braç (a₁):</label>
-
-    <input type="number" id="a1" value="1" step="0.1"><br><br>
+    /* Label es tradueix com "etiqueta". És un espai reservat per a l'input.
+    <input type="number" id="a1" value="1" step="0.1"><br><br> 
+    /* Input significa una entrada una entrada de informació
 
 
     <label for="a2">Longitud del segon braç (a₂):</label>
@@ -100,15 +96,19 @@ Charset vol dir character set, és el "set" que vol dir conjunt de "characters" 
 
     <input type="number" id="q2" value="30" step="0.1"><br><br>
 
-
     <button onclick="calculatePosition()">Calcula la posició</button>
-
+/* La línia 99 relaciona el codi html amb el codi javascript perquè la 
+   etiqueta button de html té una propietat anomenada onclick que executa funció javascript
+   anomenada "calculatePosition()", trobada a la línia 111 que farà càlculs matemàtics.*/
+  
   </div>
 
   <div id="output"></div>
 
   <canvas id="robotCanvas" width="400" height="400"></canvas>
-
+/* La línia 104 i 106 són espai buits, fets per diviisors(trossos de codi).
+  A la línia 104 li hem dit "output", que són les fórmules que apareixeran.
+  "robotCanvas" és un altre divisor on apareixeran els dibuixos dels vectors.*/
 
 <script>
 
@@ -117,7 +117,7 @@ function calculatePosition() {
   // Agafar les dades introduïdes per l'usuari
 
   let a1 = parseFloat(document.getElementById('a1').value);
-
+// let a1 crea un espai a la memòria per emmagatzemar el valor
   let a2 = parseFloat(document.getElementById('a2').value);
 
   let q1_deg = parseFloat(document.getElementById('q1').value); // Grados
