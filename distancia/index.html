@@ -14,7 +14,14 @@ window.MathJax = {
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <style>
+  /*La línia 18 diu que tot el text del html que està en el body, agafi el tipus de lletra arial, 
+  agafa Hervetica i si no el troba agafa qualsevol lletra sans-serif. 
+  Margin de 20 píxels al voltant e tot el contingut per assegurar-nos de deixar separats els continguts dels 4 costats.
+  Line-height és el espai vertical  entre línies del text, que per defecte depèn del tipus de lletra i acostuma a ser 1,2,1,4 significa que entre una línia i 
+  la següents hi ha una separació del 120% o 140%. Nosaltres hem triat línies més separades un 170%. 
+  El color 123 és un color hexadecimal i sempre té 6 digits #rrggbb, sent cada lletra un número */
 body{font-family:Arial,Helvetica,sans-serif;margin:20px;line-height:1.7;color:#123}
+  /* */
 h1,h2,h3{color:#0b3d91}
 .formula{background:#f7f7f9;padding:12px;border-radius:6px;margin:10px 0;text-align:center}
 table{border-collapse:collapse;margin:10px 0}
@@ -76,7 +83,10 @@ img {
 <p>Per veure-ho de manera geomètrica simple:</p>
 <div class="step">Component Nord-Sud: $$NS = |\Delta Lat| \times 60 = 0.1242 \times 60 = 7.45 \text{ NM}$$</div>
 
-<p class="note">Un grau de latitud és constant a tota la Terra i representa aproximadament 60 milles nàutiques (111 km) entre paral·lels...</p>
+<p class="note">Un grau de latitud és constant a tota la Terra i representa aproximadament 60 milles nàutiques (111 km) entre paral·lels... 
+  Si estic a l'equador un segon és una milla, perquè cosinus de 0 és 1. A Barcelona estic a 42 graus de latitud i per taant un segon de longitud seri cos de 42 milles=0,74 milles. Si vaig
+més cap al nord a Islàndia, la lattud de 60 graus i el cos de la latitud és 0,5 i vol dir que un segon de longitud serà mitja milla. En el pol o pol sud, 
+  l'angle de latitud és de 90 graus és 0, per tant tenim 0 milles de distància. </p>
 
 <div class="step">Longitud a lat mitjana: $$1^\circ lon = 60 \cos(35.95^\circ) \approx 49.2 \text{ NM}$$</div>
 <div class="step">Component Est-Oest: $$EW = \Delta Lon \times 49.2 = 0.2900 \times 49.2 \approx 14.27 \text{ NM}$$</div>
