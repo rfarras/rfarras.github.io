@@ -30,29 +30,46 @@ h1,h2,h3{color:#0b3d91}
   pixels(padding), unes cantonades arrodonides(border-radius),un espai vertical abans i desprès de la caixa (margin) i que
   el text de la formula estigui dins de la caixa*/
 .formula{background:#f7f7f9;padding:12px;border-radius:6px;margin:10px 0;text-align:center}
-     /* A la línia 36 tenim els estils de la taula generals, que es troba a la línia 54, el Collapse fa que les línies de les
+  /* A la línia 36 tenim els estils de la taula generals, que es troba a la línia 54, el Collapse fa que les línies de les
   taules siguin senzilles i no línies dobles ( surten per defecte sempre dobles). El marge dona un espai abans de la taula i
   desprès de la taula. */    
 table{border-collapse:collapse;margin:10px 0}
-  /*td és una cel·la i significa table data o dada de una taula o cel·la i th és table heading que és la primera filera de una
-  taula. Tant les cel·les normals com les cel·les de les primeres fileres, tenen un espai de 6 pixels.*/
+  /* td és una cel·la i significa table data o dada de una taula o cel·la i th és table heading que és la primera filera de una
+  taula. Tant les cel·les normals com les cel·les de les primeres fileres, tenen un espai de 6 pixels.
+  El contorn (border) serà d'un píxel i sòlid perquè podria ser dashed (amb ratlles) o dotted (amb punts).
+  El color ccc és 6c ja que està abreujat (#cccccc). És un gris clar perquè gris és quan els tres números son iguals.
+  C és un número hexadecimal (12) i és de color claar perquè s''aproxima a #FFFFFF qu és el gris més clar (blanc).*/
 td,th{padding:6px;border:1px solid #ccc}
 .step{margin:10px 0;padding-left:15px;border-left:3px solid #0b3d91}
+  /*quan tenim un punt al principi de css és una classe(es pot posar més cops), quan tenim un # és un identificaador que només es pot posar un cop.
+  La classe step apareix a la 70,71,79,80,83,84... Perquè ens permet esscriure els passos detallats amb les fórmules.
+  Volem un espai al voltant de cada pas matemàtic de 10px en totes direccions. També volem que només a la esquerra hi hagi un marge interior (pdding-left).
+  Vull una barra vertical bava solida de 3 píxels per mmrcar cada pas o step, és de 3 px de gruix i sòlida.*/
 .note{margin:8px 0;padding:8px;background:#fff8dc;border-left:4px solid #ffcc00}
+  /*Note és una nota explicativa que volem que surti separada i destacada en el text. Li posem un marge vertical al voltant de la nota de 8px i també intern de la mateixa mida
+  li posem un background diferent color crema i una barra groga de 4 px a l'esquerra.*/
 img {
+  /* La línia 51 afecta a totes les imatges del document (html)*/
   max-width: 100%;
+  /* La imatge mai serà més aple que el seu contenidor i que s'intenti adaptar al 100% */
   height: auto;
-  display: block; /* opcional: elimina pequeños espacios debajo de la imagen */
+  /* Volem que es mantinguin les proporcions de la imatge, perquè li he dit que la alçada sigui la mateixa que la del contenidor. Això farà que s'adaprti la imatge al ample de la pantalla i que no es deformi.*/
+  display: block; /* Evita petits espais sota la imtge  que apareixen per defecte amb inline, si no res s'enten display:inline i deixa un espai a sota de la imatge que no volem. */
 }
 </style>
 </head>
 <body>
-<h1>Problema de navegació — Tarifa → Ceuta</h1>
+<h1>Problema de navegació — Tarifa → Ceuta</h1> 
+  <!--h1 és un títol gran, h2 és més petit. Existeixen h4 i h5 però poden ser més petits que el paràgraf, però depen del tipus/ font de la lletra -->
 
 <h2>0) Conversió de coordenades (DMS → decimal)</h2>
 <p>Per treballar amb fórmules trigonomètriques, necessitem les coordenades en decimal. A continuació convertim pas a pas.</p>
 
-<h3>Tarifa</h3>
+<h3>Tarifa</h3> 
+  <!-- Les taules han de tenir la etiqueta table per cmençar i acabar i cada filera de la taula s'anomena en anglès row 
+  i l'etiqueta tr vol dir table row o filera de taula i ha de posar-se a l'inici i al final de table row en una filera com en les línies següents. 
+  Dintre de tr poden haver th o td. th vol dir table heading o títol de la taula i td vol dir  taula de la dada. Cada th i cada td és una cel·la de la taula. 
+  Les th acostumen a posar-se en negreta pr distingir-se com a títol-->
 <table>
 <tr><th>Latitud (DMS)</th><td>36º 0' 45" N</td></tr>
 <tr><th>Longitud (DMS)</th><td>5º 36' 20.16" W</td></tr>
