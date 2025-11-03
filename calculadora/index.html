@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Cinemàtica Robòtica</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Calculadora de Cinemàtica Robòtica - Pas a Pas</title>
+
+    <!-- MathJax per renderitzar fórmules LaTeX -->
     <script>
         window.MathJax = {
             tex: {
@@ -11,655 +13,996 @@
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
                 processEscapes: true
             },
-            svg: {
-                fontCache: 'global'
-            },
+            svg: { fontCache: 'global' },
             startup: {
-                pageReady: function() {
-                    return MathJax.startup.defaultPageReady().then(function() {
-                        // Calcular automáticamente al cargar la página
-                        calculateAll();
+                pageReady: function () {
+                    return MathJax.startup.defaultPageReady().then(function () {
+                        // Quan MathJax estigui llest, fem un primer càlcul
+                        // (es pot ometre aquí perquè hi ha un load event més endavant)
+                        // calculateAll();
                     });
                 }
             }
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
     <style>
-        :root {
+        /* ===== COLORS & ROOT VARIABLES ===== */
+        :root{
             --primary: #2c3e50;
             --secondary: #3498db;
             --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --muted: #7f8c8d;
             --success: #27ae60;
+            --card-bg: #ffffff;
+            --glass: rgba(255,255,255,0.6);
+            --shadow: 0 6px 18px rgba(0,0,0,0.08);
+            --radius-lg: 12px;
+            --radius-sm: 8px;
+            --mono: "Courier New", Courier, monospace;
         }
-        
-        * {
-            box-sizing: border-box;
+
+        /* ===== BASIC LAYOUT ===== */
+        *{box-sizing:border-box}
+        html,body{
+            height:100%;
+            margin:0;
+            padding:0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg,#f5f7fa 0%, #d8e1ef 100%);
+            color:#222;
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
+
+        .app {
+            max-width: 1100px;
+            margin: 28px auto;
             padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
         }
-        
+
         header {
-            background-color: var(--primary);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: linear-gradient(90deg,var(--primary),#24414a);
+            color: #fff;
+            padding: 22px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
         }
-        
-        h2, h3 {
-            color: var(--primary);
-            margin-top: 0;
+
+        header h1{
+            margin:0;
+            font-size: 1.6rem;
+            letter-spacing: 0.2px;
         }
-        
-        h1 {
-          color: var(--secondary);
-          font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-    
+        header p.subtitle{
+            margin:6px 0 0 0;
+            opacity:0.9;
         }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .container {
+
+        /* ===== GRID ===== */
+        .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 18px;
         }
-        
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
+
+        @media (max-width: 900px){
+            .grid{grid-template-columns:1fr}
         }
-        
-        .input-section, .calculation-section {
-            background: white;
-            padding: 1.5rem;
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            overflow: visible;
+        }
+
+        .section-title {
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin-bottom: 12px;
+        }
+        .section-title .dot {
+            width:10px;height:28px;border-radius:4px;background:var(--secondary);
+        }
+        .section-title h2 { margin:0;font-size:1.05rem;color:var(--primary) }
+
+        /* ===== FORM STYLES ===== */
+        .form-row{
+            display:flex;
+            gap:10px;
+            margin-bottom: 12px;
+        }
+        .form-col{
+            flex:1;
+        }
+        label{display:block;font-weight:600;margin-bottom:6px;color:var(--muted)}
+        input[type="number"], select{
+            width:100%;
+            padding:10px 12px;
+            border-radius:8px;
+            border:1px solid #e3e7ee;
+            font-size:0.95rem;
+        }
+        input[type="number"]:focus, select:focus{
+            outline:none;
+            border-color:var(--secondary);
+            box-shadow:0 4px 10px rgba(52,152,219,0.08);
+        }
+
+        button.primary {
+            width:100%;
+            padding:10px 12px;
+            background:var(--secondary);
+            color:#fff;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:700;
+            letter-spacing:0.2px;
+            transition: all .18s ease;
+        }
+        button.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(52,152,219,0.12);}
+
+        .small {
+            padding:8px 10px;
+            display:inline-block;
+            border-radius:6px;
+            border:1px solid #e7eef8;
+            background:#fff;
+            cursor:pointer;
+        }
+
+        /* ===== RESULTS ===== */
+        #results-container {
+            min-height: 240px;
+        }
+
+        .calculation-step {
+            margin-bottom: 14px;
+            padding: 12px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: linear-gradient(180deg,#ffffff,#fbfdff);
+            border:1px solid #eef3f9;
+            transition: transform .25s ease, opacity .25s ease;
+            opacity:0;
+            transform: translateY(6px);
         }
-        
-        .form-group {
-            margin-bottom: 1.2rem;
+        .calculation-step.visible {
+            opacity:1;
+            transform: translateY(0);
         }
-        
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: var(--dark);
+
+        .calculation-step h3{
+            margin:0 0 8px 0;
+            font-size:1rem;
+            color:var(--primary);
         }
-        
-        input, select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border 0.3s;
-        }
-        
-        input:focus, select:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-        
-        button {
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-            margin-top: 1rem;
-            width: 100%;
-            font-weight: bold;
-        }
-        
-        button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
+
         .result {
-            margin-top: 1.5rem;
-            padding: 1.2rem;
-            background-color: var(--light);
-            border-radius: 5px;
+            margin-top:10px;
+            padding:10px;
+            background:var(--light);
+            border-radius:8px;
             border-left: 4px solid var(--secondary);
         }
-        
-        .math-display {
-            padding: 1rem;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            margin: 1rem 0;
-            overflow-x: auto;
-            text-align: center;
-        }
-        
-        .calculation-step {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .calculation-step:last-child {
-            border-bottom: none;
-        }
-        
-        .robot-diagram {
-            text-align: center;
-            margin: 2rem 0;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
+
         .value-display {
-            font-weight: bold;
-            color: var(--accent);
-            font-size: 1.1rem;
+            font-weight:700;
+            color:var(--accent);
+            font-family: var(--mono);
         }
-        
-        .input-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+
+        .math-display{
+            background: #f6f8fb;
+            border-radius:8px;
+            padding:10px;
+            margin:8px 0;
+            overflow-x:auto;
+            text-align:center;
+            border:1px dashed rgba(0,0,0,0.03);
         }
-        
-        footer {
-            margin-top: 3rem;
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            padding: 1rem;
+
+        .error { color: var(--accent); font-weight:700;}
+        .success { color: var(--success); font-weight:700;}
+
+        /* ===== EXPANDABLE STEPS ===== */
+        .expandable-step { margin-top:8px; }
+        .toggle-btn {
+            appearance:none;
+            -webkit-appearance:none;
+            border:none;
+            padding:8px 12px;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:700;
+            background:var(--secondary);
+            color:#fff;
+            transition: background .18s ease, transform .12s ease;
         }
-        
-        .success {
-            color: var(--success);
+        .toggle-btn.active { background:var(--accent); }
+        .toggle-btn:focus{ outline:none; box-shadow: 0 6px 18px rgba(52,152,219,0.12); transform: translateY(-1px); }
+
+        .step-content {
+            display:none;
+            margin-top:8px;
+            padding:10px;
+            border-radius:8px;
+            background: linear-gradient(180deg,#ffffff,#fbfdff);
+            border:1px solid #eef6fb;
         }
-        
-        .error {
-            color: var(--accent);
-        }
-        
-        .section-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--light);
-        }
-        
-        .section-title h2 {
-            margin: 0;
-        }
-        
-        .section-title::before {
-            content: "";
-            display: inline-block;
-            width: 8px;
-            height: 25px;
-            background-color: var(--secondary);
-            margin-right: 10px;
-            border-radius: 4px;
-        }
-        
+        .step-content.open { display:block; }
+
+        /* ===== LOADING ===== */
         .loading {
-            display: none;
-            text-align: center;
-            padding: 1rem;
+            display:none;
+            text-align:center;
+            padding:12px;
         }
-        
         .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--secondary);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width:38px;height:38px;border-radius:50%;
+            border:5px solid rgba(0,0,0,0.06);
+            border-left-color:var(--secondary);
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin:0 auto 8px auto;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== EXTRA STYLES PER AJUDAR LECTURA ===== */
+        footer { text-align:center; margin-top:20px; color:var(--muted); font-size:0.9rem; }
+        .hint { font-size:0.9rem;color:var(--muted);margin:6px 0 12px 0;}
+        pre.debug {
+            white-space:pre-wrap;
+            font-family:var(--mono);
+            background:#f4f6f8;
+            padding:8px;border-radius:6px;border:1px solid #eef4fb;
+            overflow-x:auto;
         }
+
+        /* small responsive tweaks */
+        @media (max-width: 520px){
+            .form-row { flex-direction: column; }
+        }
+
+
+        /* ------------------------------------------------------------------ */
+
     </style>
 </head>
-<body>
-    <header>
-        <h1>Calculadora de Cinemàtica Robòtica</h1>
-        <p class="subtitle">Anàlisi complet d'un robot de 2 graus de llibertat</p>
-    </header>
-    
-    <div class="container">
-        <section class="input-section">
-            <div class="section-title">
-                <h2>Configuració del Robot</h2>
-            </div>
-            
-            <div class="robot-diagram">
-                <p><strong>Robot de 2 graus de llibertat</strong></p>
-                <div class="math-display">
-                    $$
-                    \begin{cases}
-                    x = a_1 \cos(q_1) + a_2 \cos(q_1 + q_2) \\
-                    y = a_1 \sin(q_1) + a_2 \sin(q_1 + q_2)
-                    \end{cases}
-                    $$
-                </div>
-            </div>
-            
-            <div class="input-row">
-                <div class="form-group">
-                    <label for="a1">Longitud a₁ (m):</label>
-                    <input type="number" id="a1" value="1.0" step="0.1" min="0.1">
-                </div>
-                
-                <div class="form-group">
-                    <label for="a2">Longitud a₂ (m):</label>
-                    <input type="number" id="a2" value="0.5" step="0.1" min="0.1">
-                </div>
-            </div>
-            
-            <div class="input-row">
-                <div class="form-group">
-                    <label for="q1">Angle q₁ (graus):</label>
-                    <input type="number" id="q1" value="30" step="0.1">
-                </div>
-                
-                <div class="form-group">
-                    <label for="q2">Angle q₂ (graus):</label>
-                    <input type="number" id="q2" value="45" step="0.1">
-                </div>
-            </div>
-            
-            <div class="input-row">
-                <div class="form-group">
-                    <label for="q1_dot">Velocitat q̇₁ (rad/s):</label>
-                    <input type="number" id="q1_dot" value="0.5" step="0.1">
-                </div>
-                
-                <div class="form-group">
-                    <label for="q2_dot">Velocitat q̇₂ (rad/s):</label>
-                    <input type="number" id="q2_dot" value="1.0" step="0.1">
-                </div>
-            </div>
-            
-            <div class="input-row">
-                <div class="form-group">
-                    <label for="fx">Força Fx (N):</label>
-                    <input type="number" id="fx" value="0.5" step="0.1">
-                </div>
-                
-                <div class="form-group">
-                    <label for="fy">Força Fy (N):</label>
-                    <input type="number" id="fy" value="1.0" step="0.1">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="calculation-type">Tipus de càlcul:</label>
-                <select id="calculation-type">
-                    <option value="all">Tots els càlculs</option>
-                    <option value="direct">Cinemàtica directa</option>
-                    <option value="inverse">Cinemàtica inversa</option>
-                    <option value="jacobian">Jacobiana (velocitats)</option>
-                    <option value="inverse-jacobian">Jacobiana inversa</option>
-                    <option value="transpose">Jacobiana transposada (forces)</option>
-                </select>
-            </div>
-            
-            <button id="calculate-btn">Calcular</button>
-            <div class="loading" id="loading-indicator">
-                <div class="spinner"></div>
-                <p>Calculant...</p>
-            </div>
-        </section>
-        
-        <section class="calculation-section">
-            <div class="section-title">
-                <h2>Resultats</h2>
-            </div>
-            <div id="results-container">
-                <p>Introdueix les dades i prem "Calcular" per veure els resultats.</p>
-            </div>
-        </section>
-    </div>
-    
-    <footer>
-        <p>Calculadora de cinemàtica robòtica - Dissenyat per a l'aprenentatge de la robòtica</p>
-    </footer>
 
+<body>
+    <div class="app">
+        <header>
+            <h1>Calculadora de Cinemàtica Robòtica — Pas a Pas</h1>
+            <p class="subtitle">Robot planar de 2 graus de llibertat — mostra subpassos detallats, amb MathJax</p>
+        </header>
+
+        <div class="grid">
+            <!-- INPUT / CONFIGURATION -->
+            <section class="card" aria-labelledby="config-title">
+                <div class="section-title">
+                    <div class="dot"></div>
+                    <h2 id="config-title">Configuració del Robot</h2>
+                </div>
+
+                <div class="hint">Defineix les longituds, angles, velocitats i forces. Els angles en graus; velocitats en rad/s.</div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="a1">Longitud a₁ (m)</label>
+                        <input id="a1" type="number" min="0.01" step="0.01" value="1.0" />
+                    </div>
+                    <div class="form-col">
+                        <label for="a2">Longitud a₂ (m)</label>
+                        <input id="a2" type="number" min="0.01" step="0.01" value="0.5" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="q1">Angle q₁ (graus)</label>
+                        <input id="q1" type="number" step="0.1" value="30" />
+                    </div>
+                    <div class="form-col">
+                        <label for="q2">Angle q₂ (graus)</label>
+                        <input id="q2" type="number" step="0.1" value="45" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="q1_dot">Velocitat q̇₁ (rad/s)</label>
+                        <input id="q1_dot" type="number" step="0.01" value="0.5" />
+                    </div>
+                    <div class="form-col">
+                        <label for="q2_dot">Velocitat q̇₂ (rad/s)</label>
+                        <input id="q2_dot" type="number" step="0.01" value="1.0" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="fx">Força Fₓ (N)</label>
+                        <input id="fx" type="number" step="0.01" value="0.5" />
+                    </div>
+                    <div class="form-col">
+                        <label for="fy">Força Fᵧ (N)</label>
+                        <input id="fy" type="number" step="0.01" value="1.0" />
+                    </div>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <label for="calculation-type">Tipus de càlcul</label>
+                    <select id="calculation-type">
+                        <option value="all">Tots els càlculs</option>
+                        <option value="direct">Cinemàtica directa</option>
+                        <option value="inverse">Cinemàtica inversa</option>
+                        <option value="jacobian">Jacobiana (velocitats)</option>
+                        <option value="inverse-jacobian">Jacobiana inversa</option>
+                        <option value="transpose">Jacobiana transposada (forces)</option>
+                    </select>
+                </div>
+
+                <div style="margin-top:14px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <button id="calculate-btn" class="primary">Calcular</button>
+                    <button id="reset-btn" class="small" title="Restableix els valors per defecte">Restableix valors</button>
+                </div>
+
+                <div class="loading" id="loading-indicator" aria-hidden="true" style="margin-top:12px;">
+                    <div class="spinner" role="status" aria-hidden="true"></div>
+                    <div><small>Calculant...</small></div>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <details>
+                        <summary style="cursor:pointer;font-weight:700">Notes i referències</summary>
+                        <div style="margin-top:8px;font-size:0.92rem;color:var(--muted)">
+                            <p>
+                                Equacions utilitzades:
+                                <br />
+                                $$
+                                \begin{cases}
+                                x = a_1 \cos(q_1) + a_2 \cos(q_1+q_2) \\
+                                y = a_1 \sin(q_1) + a_2 \sin(q_1+q_2)
+                                \end{cases}
+                                $$
+                            </p>
+                            <p>La Jacobiana J s'ha obtingut derivant x i y respecte q₁ i q₂.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- RESULTS / CALCULATIONS -->
+            <section class="card" aria-labelledby="results-title">
+                <div class="section-title">
+                    <div class="dot"></div>
+                    <h2 id="results-title">Resultats i passos</h2>
+                </div>
+
+                <div id="results-container">
+                    <p>Introdueix les dades i prem <strong>Calcular</strong> per veure els resultats pas a pas.</p>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <button id="show-all-steps" class="small">Expandir tots els passos</button>
+                    <button id="collapse-all-steps" class="small" style="margin-left:6px">Amagar tots els passos</button>
+                </div>
+
+            </section>
+        </div>
+
+        <footer>
+            <small>Calculadora de Cinemàtica Robòtica — Dissenyada per aprendre i depurar pas a pas</small>
+        </footer>
+
+    </div>
+
+    <!-- MAIN JAVASCRIPT: tota la lògica està aquí a continuació -->
     <script>
-        // Esperar a que MathJax esté completamente cargado
-        window.addEventListener('load', function() {
-            // Configurar el event listener para el botón
-            document.getElementById('calculate-btn').addEventListener('click', function() {
+        /************************************************************************
+         * Funcions auxiliars i utilitats
+         ************************************************************************/
+
+        // Convertir graus a radians
+        function degToRad(deg) {
+            return deg * Math.PI / 180;
+        }
+
+        // Format numèric segur
+        function fmt(n, decimals = 4) {
+            if (!isFinite(n)) return 'NaN';
+            return Number(n).toFixed(decimals);
+        }
+
+        // Crea el HTML per una secció expandible (títol + contingut ocult)
+        function createExpandableStep(title, contentHtml) {
+            // Escapa la possibilitat d'input maliciós? aquí assumim que el contingut és generat internament
+            return `
+                <div class="expandable-step">
+                    <button class="toggle-btn" onclick="toggleStep(this)">${title}</button>
+                    <div class="step-content">${contentHtml}</div>
+                </div>
+            `;
+        }
+
+        // Toggle per obrir/ tancar el step
+        function toggleStep(button) {
+            var content = button.nextElementSibling;
+            var open = content.classList.toggle('open');
+            button.classList.toggle('active', open);
+            button.textContent = open ? '▼ Amagar passos' : '▶ Veure passos';
+
+            // Quan s'obre, sol·licitem renderitzar MathJax dins del contingut nou (si existeix)
+            if (open) {
+                if (window.MathJax) {
+                    MathJax.typesetPromise([content]).catch(function (err) {
+                        console.error('MathJax error:', err);
+                    });
+                }
+            }
+        }
+
+        // Funció per expandir totes les seccions obertes dins dels resultats
+        function expandAll() {
+            document.querySelectorAll('#results-container .toggle-btn').forEach(btn => {
+                if (!btn.classList.contains('active')) {
+                    btn.click();
+                }
+            });
+        }
+
+        // Funció per col·lapsar totes les seccions
+        function collapseAll() {
+            document.querySelectorAll('#results-container .toggle-btn').forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    btn.click();
+                }
+            });
+        }
+
+        /************************************************************************
+         * Configuració d'esdeveniments
+         ************************************************************************/
+        window.addEventListener('load', function () {
+            // listeners de botons
+            document.getElementById('calculate-btn').addEventListener('click', calculateAll);
+            document.getElementById('reset-btn').addEventListener('click', function () {
+                // Restablir valors per defecte
+                document.getElementById('a1').value = 1.0;
+                document.getElementById('a2').value = 0.5;
+                document.getElementById('q1').value = 30;
+                document.getElementById('q2').value = 45;
+                document.getElementById('q1_dot').value = 0.5;
+                document.getElementById('q2_dot').value = 1.0;
+                document.getElementById('fx').value = 0.5;
+                document.getElementById('fy').value = 1.0;
                 calculateAll();
             });
-            
-            // Añadir event listeners para recalcular cuando cambian los valores
-            document.querySelectorAll('input, select').forEach(element => {
-                element.addEventListener('change', function() {
+
+            // Recalcular quan canvien inputs
+            document.querySelectorAll('input, select').forEach(el => {
+                el.addEventListener('change', function () {
+                    // No demanem confirmació; calculem automàticament
                     calculateAll();
                 });
             });
-            
-            // Calcular automáticamente al cargar la página
+
+            document.getElementById('show-all-steps').addEventListener('click', expandAll);
+            document.getElementById('collapse-all-steps').addEventListener('click', collapseAll);
+
+            // Primer càlcul automàtic
             calculateAll();
         });
-        
+
+        /************************************************************************
+         * Funció principal: calculateAll
+         *
+         * Aquesta funció:
+         *  - llegeix les entrades
+         *  - calcula cada secció (directa, inversa, jacobiana...)
+         *  - construeix un HTML amb subpassos numèrics (substitució i operacions)
+         *  - mostra cada secció pas a pas amb animació
+         ************************************************************************/
         function calculateAll() {
-            // Mostrar indicador de carga
-            document.getElementById('loading-indicator').style.display = 'block';
-            
-            // Usar setTimeout para permitir que la UI se actualice
-            setTimeout(function() {
+            // Mostrem loading
+            const loading = document.getElementById('loading-indicator');
+            loading.style.display = 'block';
+            loading.setAttribute('aria-hidden', 'false');
+
+            // Fem un setTimeout curt per permetre actualització UI (i la càrrega de l'spinner)
+            setTimeout(function () {
                 try {
-                    // Obtenir valors d'entrada
+                    // ---------- LLEGIR ENTRADES ----------
                     const a1 = parseFloat(document.getElementById('a1').value);
                     const a2 = parseFloat(document.getElementById('a2').value);
-                    const q1 = parseFloat(document.getElementById('q1').value) * Math.PI / 180; // Convertir a radians
-                    const q2 = parseFloat(document.getElementById('q2').value) * Math.PI / 180; // Convertir a radians
+                    const q1_deg = parseFloat(document.getElementById('q1').value);
+                    const q2_deg = parseFloat(document.getElementById('q2').value);
+                    const q1 = degToRad(q1_deg);
+                    const q2 = degToRad(q2_deg);
                     const q1_dot = parseFloat(document.getElementById('q1_dot').value);
                     const q2_dot = parseFloat(document.getElementById('q2_dot').value);
                     const fx = parseFloat(document.getElementById('fx').value);
                     const fy = parseFloat(document.getElementById('fy').value);
                     const calculationType = document.getElementById('calculation-type').value;
-                    
+
+                    // Validacions bàsiques
+                    if (!(a1 > 0 && a2 > 0)) {
+                        throw new Error('Les longituds a1 i a2 han de ser majors que zero.');
+                    }
+
+                    // ---------- PREPARAR HTML DELS RESULTATS ----------
                     let resultsHTML = '';
-                    
-                    // Cinemàtica directa
+
+                    // ----------------- CINEMÀTICA DIRECTA -----------------
                     if (calculationType === 'all' || calculationType === 'direct') {
+                        // Fórmules i càlculs
                         const x = a1 * Math.cos(q1) + a2 * Math.cos(q1 + q2);
                         const y = a1 * Math.sin(q1) + a2 * Math.sin(q1 + q2);
-                        
+
+                        // Subpassos amb substitució i operacions detallades
+                        const substeps = `
+                            <p><strong>1.</strong> Fórmules generals:</p>
+                            <div class="math-display">
+                                \\[
+                                \\begin{cases}
+                                x = a_1 \\cos(q_1) + a_2 \\cos(q_1 + q_2) \\\\
+                                y = a_1 \\sin(q_1) + a_2 \\sin(q_1 + q_2)
+                                \\end{cases}
+                                \\]
+                            </div>
+
+                            <p><strong>2.</strong> Substitució de valors (angles en graus mostrats per claredat):</p>
+                            <div class="math-display">
+                                \\[
+                                \\begin{cases}
+                                x = ${a1} \\cos(${q1_deg.toFixed(4)}^\\circ) + ${a2} \\cos(${(q1_deg+q2_deg).toFixed(4)}^\\circ) \\\\
+                                y = ${a1} \\sin(${q1_deg.toFixed(4)}^\\circ) + ${a2} \\sin(${(q1_deg+q2_deg).toFixed(4)}^\\circ)
+                                \\end{cases}
+                                \\]
+                            </div>
+
+                            <p><strong>3.</strong> Càlcul numèric intermig (mostrem cada multiplicació):</p>
+                            <div class="math-display" style="text-align:left; font-family:var(--mono);">
+                                <pre>
+a1 * cos(q1) = ${a1} * cos(${q1.toFixed(6)}) = ${(a1*Math.cos(q1)).toFixed(6)}
+a2 * cos(q1+q2) = ${a2} * cos(${(q1+q2).toFixed(6)}) = ${(a2*Math.cos(q1+q2)).toFixed(6)}
+---> x = ${(a1*Math.cos(q1) + a2*Math.cos(q1+q2)).toFixed(6)}
+---
+a1 * sin(q1) = ${a1} * sin(${q1.toFixed(6)}) = ${(a1*Math.sin(q1)).toFixed(6)}
+a2 * sin(q1+q2) = ${a2} * sin(${(q1+q2).toFixed(6)}) = ${(a2*Math.sin(q1+q2)).toFixed(6)}
+---> y = ${(a1*Math.sin(q1) + a2*Math.sin(q1+q2)).toFixed(6)}
+                                </pre>
+                            </div>
+
+                            <p><strong>4.</strong> Resultat final:</p>
+                            <div class="math-display">
+                                \\[
+                                x = ${fmt(x,4)}, \\quad y = ${fmt(y,4)}
+                                \\]
+                            </div>
+                        `;
+
                         resultsHTML += `
                             <div class="calculation-step">
                                 <h3>Cinemàtica Directa</h3>
-                                <p>Calcula la posició (x, y) de l'efector final:</p>
-                                <div class="math-display">
-                                    \\[
-                                    \\begin{align*}
-                                    x &= a_1 \\cos(q_1) + a_2 \\cos(q_1 + q_2) \\\\
-                                    y &= a_1 \\sin(q_1) + a_2 \\sin(q_1 + q_2)
-                                    \\end{align*}
-                                    \\]
-                                </div>
+                                ${createExpandableStep('▶ Veure passos', substeps)}
                                 <div class="result">
                                     <p>Posició de l'efector final:</p>
-                                    <p>x = <span class="value-display">${x.toFixed(4)}</span> m</p>
-                                    <p>y = <span class="value-display">${y.toFixed(4)}</span> m</p>
+                                    <p>x = <span class="value-display">${fmt(x,4)}</span> m</p>
+                                    <p>y = <span class="value-display">${fmt(y,4)}</span> m</p>
                                 </div>
                             </div>
                         `;
                     }
-                    
-                    // Cinemàtica inversa
+
+                    // ----------------- CINEMÀTICA INVERSA -----------------
                     if (calculationType === 'all' || calculationType === 'inverse') {
-                        // Calcular la posició per verificar
+                        // Primer calculem la posició segons les dades donades per poder verificar la inversa
                         const x = a1 * Math.cos(q1) + a2 * Math.cos(q1 + q2);
                         const y = a1 * Math.sin(q1) + a2 * Math.sin(q1 + q2);
-                        
-                        // Calcular q2 possible
+
+                        // Calcular q2 mitjançant la llei del cos
                         const cos_q2 = (x*x + y*y - a1*a1 - a2*a2) / (2 * a1 * a2);
-                        // Asegurar que cos_q2 está en el rango [-1, 1] para evitar errores numéricos
                         const cos_q2_clamped = Math.max(-1, Math.min(1, cos_q2));
-                        const q2_calculated = Math.acos(cos_q2_clamped);
-                        
-                        // Calcular q1 possible
-                        const q1_calculated = Math.atan2(y, x) - Math.atan2(a2 * Math.sin(q2_calculated), a1 + a2 * Math.cos(q2_calculated));
-                        
-                        // Verificar si els valors calculats coincideixen amb els originals
-                        const q1_diff = Math.abs(q1 - q1_calculated);
-                        const q2_diff = Math.abs(q2 - q2_calculated);
-                        const tolerance = 0.001; // Tolerància per errors numèrics
-                        
+                        const q2_calc = Math.acos(cos_q2_clamped);
+
+                        // Calcular q1 amb l'augment d'angle
+                        const q1_calc = Math.atan2(y, x) - Math.atan2(a2 * Math.sin(q2_calc), a1 + a2 * Math.cos(q2_calc));
+
+                        // Convertim a graus per mostrar
+                        const q1_calc_deg = q1_calc * 180 / Math.PI;
+                        const q2_calc_deg = q2_calc * 180 / Math.PI;
+
+                        const substeps = `
+                            <p><strong>1.</strong> Fórmules generals:</p>
+                            <div class="math-display">
+                                \\[
+                                \\begin{aligned}
+                                q_2 &= \\cos^{-1}\\left(\\frac{x^2 + y^2 - a_1^2 - a_2^2}{2 a_1 a_2}\\right) \\\\
+                                q_1 &= \\operatorname{atan2}(y,x) - \\operatorname{atan2}\\left(\\frac{a_2 \\sin q_2}{a_1 + a_2 \\cos q_2}\\right)
+                                \\end{aligned}
+                                \\]
+                            </div>
+
+                            <p><strong>2.</strong> Substitució de x i y (valors utilitzats):</p>
+                            <div class="math-display">
+                                \\[
+                                x = ${fmt(x,4)}, \\quad y = ${fmt(y,4)}
+                                \\]
+                            </div>
+
+                            <p><strong>3.</strong> Càlcul intermig (llavors el cos i l'arccos):</p>
+                            <div class="math-display" style="font-family:var(--mono); text-align:left;">
+                                <pre>
+Numerador (x^2 + y^2 - a1^2 - a2^2) = ${(x*x + y*y - a1*a1 - a2*a2).toFixed(6)}
+Denominador (2*a1*a2) = ${(2*a1*a2).toFixed(6)}
+cos(q2) = ${cos_q2.toFixed(6)} (clamped: ${cos_q2_clamped.toFixed(6)})
+q2 = arccos(${cos_q2_clamped.toFixed(6)}) = ${q2_calc.toFixed(6)} rad = ${q2_calc_deg.toFixed(6)}°
+-----
+q1 = atan2(${y.toFixed(6)}, ${x.toFixed(6)}) - atan2(${(a2*Math.sin(q2_calc)).toFixed(6)}, ${(a1 + a2*Math.cos(q2_calc)).toFixed(6)})
+   = ${q1_calc.toFixed(6)} rad = ${q1_calc_deg.toFixed(6)}°
+                                </pre>
+                            </div>
+
+                            <p><strong>4.</strong> Resultats finals (en graus):</p>
+                            <div class="math-display">
+                                \\[
+                                q_1 = ${q1_calc_deg.toFixed(4)}^\\circ, \\quad q_2 = ${q2_calc_deg.toFixed(4)}^\\circ
+                                \\]
+                            </div>
+                        `;
+
                         resultsHTML += `
                             <div class="calculation-step">
                                 <h3>Cinemàtica Inversa</h3>
-                                <p>Verifica que els angles q₁ i q₂ són correctes per a la posició (x, y):</p>
-                                <div class="math-display">
-                                    \\[
-                                    \\begin{align*}
-                                    q_2 &= \\cos^{-1}\\left(\\frac{x^2 + y^2 - a_1^2 - a_2^2}{2 a_1 a_2}\\right) \\\\
-                                    q_1 &= \\tan^{-1}\\left(\\frac{y}{x}\\right) - \\tan^{-1}\\left(\\frac{a_2 \\sin(q_2)}{a_1 + a_2 \\cos(q_2)}\\right)
-                                    \\end{align*}
-                                    \\]
-                                </div>
+                                ${createExpandableStep('▶ Veure passos', substeps)}
                                 <div class="result">
                                     <p>Angles calculats:</p>
-                                    <p>q₁ = <span class="value-display">${(q1_calculated * 180 / Math.PI).toFixed(4)}</span>°</p>
-                                    <p>q₂ = <span class="value-display">${(q2_calculated * 180 / Math.PI).toFixed(4)}</span>°</p>
-                                    <p>Verificació: ${(q1_diff < tolerance && q2_diff < tolerance) ? 
-                                        '<span class="success">✓ Els angles són correctes</span>' : 
-                                        '<span class="error">✗ Els angles no coincideixen</span>'}</p>
+                                    <p>q₁ = <span class="value-display">${q1_calc_deg.toFixed(4)}</span>°</p>
+                                    <p>q₂ = <span class="value-display">${q2_calc_deg.toFixed(4)}</span>°</p>
                                 </div>
                             </div>
                         `;
                     }
-                    
-                    // Jacobiana (velocitats)
+
+                    // ----------------- JACOBIANA (VELOCITATS) -----------------
                     if (calculationType === 'all' || calculationType === 'jacobian') {
+                        // Elements de la Jacobiana
                         const J11 = -a1 * Math.sin(q1) - a2 * Math.sin(q1 + q2);
                         const J12 = -a2 * Math.sin(q1 + q2);
                         const J21 = a1 * Math.cos(q1) + a2 * Math.cos(q1 + q2);
                         const J22 = a2 * Math.cos(q1 + q2);
-                        
+
+                        // Velocitats cartesianes
                         const x_dot = J11 * q1_dot + J12 * q2_dot;
                         const y_dot = J21 * q1_dot + J22 * q2_dot;
-                        
+
+                        const substeps = `
+                            <p><strong>1.</strong> Jacobiana simbòlica:</p>
+                            <div class="math-display">
+                                \\[
+                                J = 
+                                \\begin{bmatrix}
+                                -a_1 \\sin(q_1) - a_2 \\sin(q_1 + q_2) & -a_2 \\sin(q_1+q_2) \\\\
+                                a_1 \\cos(q_1) + a_2 \\cos(q_1 + q_2) & a_2 \\cos(q_1+q_2)
+                                \\end{bmatrix}
+                                \\]
+                            </div>
+
+                            <p><strong>2.</strong> Substitució numèrica dels elements:</p>
+                            <div class="math-display">
+                                \\[
+                                J =
+                                \\begin{bmatrix}
+                                ${J11.toFixed(6)} & ${J12.toFixed(6)} \\\\
+                                ${J21.toFixed(6)} & ${J22.toFixed(6)}
+                                \\end{bmatrix}
+                                \\]
+                            </div>
+
+                            <p><strong>3.</strong> Càlcul de ẋ i ẏ (mostrem multiplicacions individuals):</p>
+                            <div class="math-display" style="font-family:var(--mono); text-align:left;">
+                                <pre>
+ẋ = J11 * q̇1 + J12 * q̇2
+   = ${J11.toFixed(6)} * ${q1_dot} + ${J12.toFixed(6)} * ${q2_dot}
+   = ${(J11*q1_dot).toFixed(6)} + ${(J12*q2_dot).toFixed(6)}
+   = ${x_dot.toFixed(6)}
+
+ẏ = J21 * q̇1 + J22 * q̇2
+   = ${J21.toFixed(6)} * ${q1_dot} + ${J22.toFixed(6)} * ${q2_dot}
+   = ${(J21*q1_dot).toFixed(6)} + ${(J22*q2_dot).toFixed(6)}
+   = ${y_dot.toFixed(6)}
+                                </pre>
+                            </div>
+                        `;
+
                         resultsHTML += `
                             <div class="calculation-step">
                                 <h3>Jacobiana (Velocitats)</h3>
-                                <p>Calcula les velocitats ẋ i ẏ de l'efector:</p>
-                                <div class="math-display">
-                                    \\[
-                                    \\begin{bmatrix}
-                                    \\dot{x} \\\\
-                                    \\dot{y}
-                                    \\end{bmatrix}
-                                    =
-                                    \\begin{bmatrix}
-                                    -a_1 \\sin(q_1) - a_2 \\sin(q_1+q_2) & -a_2 \\sin(q_1+q_2) \\\\
-                                    a_1 \\cos(q_1) + a_2 \\cos(q_1+q_2) & a_2 \\cos(q_1+q_2)
-                                    \\end{bmatrix}
-                                    \\begin{bmatrix}
-                                    \\dot{q}_1 \\\\
-                                    \\dot{q}_2
-                                    \\end{bmatrix}
-                                    \\]
-                                </div>
+                                ${createExpandableStep('▶ Veure passos', substeps)}
                                 <div class="result">
-                                    <p>Matriu Jacobiana:</p>
-                                    <p>J = 
-                                        \\[
-                                        \\begin{bmatrix}
-                                        ${J11.toFixed(4)} & ${J12.toFixed(4)} \\\\
-                                        ${J21.toFixed(4)} & ${J22.toFixed(4)}
-                                        \\end{bmatrix}
-                                        \\]
-                                    </p>
-                                    <p>Velocitats de l'efector:</p>
+                                    <p>Matriu Jacobiana (elements mostrats numèricament):</p>
+                                    <p style="font-family:var(--mono)">J = [ [${J11.toFixed(4)}, ${J12.toFixed(4)}], [${J21.toFixed(4)}, ${J22.toFixed(4)}] ]</p>
                                     <p>ẋ = <span class="value-display">${x_dot.toFixed(4)}</span> m/s</p>
                                     <p>ẏ = <span class="value-display">${y_dot.toFixed(4)}</span> m/s</p>
                                 </div>
                             </div>
                         `;
                     }
-                    
-                    // Jacobiana inversa
+
+                    // ----------------- JACOBIANA INVERSA -----------------
                     if (calculationType === 'all' || calculationType === 'inverse-jacobian') {
-                        // Calcular la Jacobiana
+                        // Recalculate J elements for this section
                         const J11 = -a1 * Math.sin(q1) - a2 * Math.sin(q1 + q2);
                         const J12 = -a2 * Math.sin(q1 + q2);
                         const J21 = a1 * Math.cos(q1) + a2 * Math.cos(q1 + q2);
                         const J22 = a2 * Math.cos(q1 + q2);
-                        
-                        // Calcular el determinant
+
                         const detJ = J11 * J22 - J12 * J21;
-                        
-                        // Calcular la inversa si el determinant no és zero
-                        if (Math.abs(detJ) > 1e-10) {
-                            const invJ11 = J22 / detJ;
-                            const invJ12 = -J12 / detJ;
-                            const invJ21 = -J21 / detJ;
-                            const invJ22 = J11 / detJ;
-                            
-                            // Calcular les velocitats cartesianes
-                            const x_dot = J11 * q1_dot + J12 * q2_dot;
-                            const y_dot = J21 * q1_dot + J22 * q2_dot;
-                            
-                            // Verificar amb la Jacobiana inversa
-                            const q1_dot_verif = invJ11 * x_dot + invJ12 * y_dot;
-                            const q2_dot_verif = invJ21 * x_dot + invJ22 * y_dot;
-                            
-                            const q1_dot_diff = Math.abs(q1_dot - q1_dot_verif);
-                            const q2_dot_diff = Math.abs(q2_dot - q2_dot_verif);
-                            const tolerance = 0.001;
-                            
+
+                        if (Math.abs(detJ) < 1e-9) {
+                            // Jacobiana singular: no es pot invertir
+                            const substeps = `
+                                <p><strong>1.</strong> Determinant:</p>
+                                <div class="math-display">
+                                    \\[
+                                    \\det(J) = J_{11} J_{22} - J_{12} J_{21} = ${detJ.toFixed(10)}
+                                    \\]
+                                </div>
+                                <p><strong>2.</strong> Conclusió:</p>
+                                <div class="math-display">
+                                    <strong class="error">La Jacobiana és gairebé singular (det ≈ 0). No es pot calcular l'inversa amb precisió numèrica.</strong>
+                                </div>
+                            `;
+
                             resultsHTML += `
                                 <div class="calculation-step">
                                     <h3>Jacobiana Inversa</h3>
-                                    <p>Verifica que les velocitats de rotació són correctes:</p>
-                                    <div class="math-display">
-                                        \\[
-                                        \\begin{bmatrix}
-                                        \\dot{q}_1 \\\\
-                                        \\dot{q}_2
-                                        \\end{bmatrix}
-                                        = J^{-1}
-                                        \\begin{bmatrix}
-                                        \\dot{x} \\\\
-                                        \\dot{y}
-                                        \\end{bmatrix}
-                                        \\]
-                                    </div>
+                                    ${createExpandableStep('▶ Veure passos', substeps)}
                                     <div class="result">
-                                        <p>Matriu Jacobiana inversa:</p>
-                                        <p>J⁻¹ = 
-                                            \\[
-                                            \\begin{bmatrix}
-                                            ${invJ11.toFixed(4)} & ${invJ12.toFixed(4)} \\\\
-                                            ${invJ21.toFixed(4)} & ${invJ22.toFixed(4)}
-                                            \\end{bmatrix}
-                                            \\]
-                                        </p>
-                                        <p>Velocitats articulares verificades:</p>
-                                        <p>q̇₁ = <span class="value-display">${q1_dot_verif.toFixed(4)}</span> rad/s</p>
-                                        <p>q̇₂ = <span class="value-display">${q2_dot_verif.toFixed(4)}</span> rad/s</p>
-                                        <p>Verificació: ${(q1_dot_diff < tolerance && q2_dot_diff < tolerance) ? 
-                                            '<span class="success">✓ Les velocitats són correctes</span>' : 
-                                            '<span class="error">✗ Les velocitats no coincideixen</span>'}</p>
+                                        <p class="error">La matriu Jacobiana és singular (determinant = ${detJ.toFixed(6)}).</p>
+                                        <p>No es pot calcular la inversa per aquesta configuració.</p>
                                     </div>
                                 </div>
                             `;
                         } else {
+                            const invJ11 = J22 / detJ;
+                            const invJ12 = -J12 / detJ;
+                            const invJ21 = -J21 / detJ;
+                            const invJ22 = J11 / detJ;
+
+                            // També verifiquem l'operació amb ẋ,ẏ per calcular q̇
+                            const x_dot = J11 * q1_dot + J12 * q2_dot;
+                            const y_dot = J21 * q1_dot + J22 * q2_dot;
+
+                            const q1_dot_verif = invJ11 * x_dot + invJ12 * y_dot;
+                            const q2_dot_verif = invJ21 * x_dot + invJ22 * y_dot;
+
+                            const q1_dot_diff = Math.abs(q1_dot - q1_dot_verif);
+                            const q2_dot_diff = Math.abs(q2_dot - q2_dot_verif);
+
+                            const substeps = `
+                                <p><strong>1.</strong> Determinant i comprovació:</p>
+                                <div class="math-display">
+                                    \\[
+                                    \\det(J) = ${detJ.toFixed(6)}
+                                    \\]
+                                </div>
+
+                                <p><strong>2.</strong> Matriu inversa (elements calculats):</p>
+                                <div class="math-display">
+                                    \\[
+                                    J^{-1} =
+                                    \\begin{bmatrix}
+                                    ${invJ11.toFixed(6)} & ${invJ12.toFixed(6)} \\\\
+                                    ${invJ21.toFixed(6)} & ${invJ22.toFixed(6)}
+                                    \\end{bmatrix}
+                                    \\]
+                                </div>
+
+                                <p><strong>3.</strong> Verificació aplicant J^{-1} a [ẋ ẏ]^T:</p>
+                                <div class="math-display" style="font-family:var(--mono); text-align:left;">
+                                    <pre>
+ẋ = ${x_dot.toFixed(6)}, ẏ = ${y_dot.toFixed(6)}
+
+q̇1_verif = ${invJ11.toFixed(6)}*ẋ + ${invJ12.toFixed(6)}*ẏ = ${q1_dot_verif.toFixed(6)}
+q̇2_verif = ${invJ21.toFixed(6)}*ẋ + ${invJ22.toFixed(6)}*ẏ = ${q2_dot_verif.toFixed(6)}
+
+Diferències absolutes respecte a les q̇ originals:
+|Δq̇1| = ${q1_dot_diff.toFixed(6)}, |Δq̇2| = ${q2_dot_diff.toFixed(6)}
+                                    </pre>
+                                </div>
+                            `;
+
                             resultsHTML += `
                                 <div class="calculation-step">
                                     <h3>Jacobiana Inversa</h3>
-                                    <div class="result" style="border-left-color: var(--accent);">
-                                        <p class="error">La matriu Jacobiana és singular (determinant = ${detJ.toFixed(6)}).</p>
-                                        <p>No es pot calcular la inversa en aquesta configuració.</p>
+                                    ${createExpandableStep('▶ Veure passos', substeps)}
+                                    <div class="result">
+                                        <p>Inversa calculada correctament:</p>
+                                        <p style="font-family:var(--mono)">
+                                            J<sup>-1</sup> = [[${invJ11.toFixed(4)}, ${invJ12.toFixed(4)}],[${invJ21.toFixed(4)}, ${invJ22.toFixed(4)}]]
+                                        </p>
+                                        <p>Verificació de velocitats articulars: q̇1 = <span class="value-display">${q1_dot_verif.toFixed(4)}</span>, q̇2 = <span class="value-display">${q2_dot_verif.toFixed(4)}</span></p>
+                                        <p>${(q1_dot_diff < 1e-3 && q2_dot_diff < 1e-3) ? '<span class="success">✓ Coincideixen amb les velocitats originals</span>' : '<span class="error">✗ Hi ha diferències amb les velocitats originals</span>'}</p>
                                     </div>
                                 </div>
                             `;
                         }
                     }
-                    
-                    // Jacobiana transposada (forces)
+
+                    // ----------------- JACOBIANA TRANSPOSADA (FORCES -> PARELLS) -----------------
                     if (calculationType === 'all' || calculationType === 'transpose') {
-                        // Calcular la Jacobiana
+                        // Recalcularem J per assegurar consistència
                         const J11 = -a1 * Math.sin(q1) - a2 * Math.sin(q1 + q2);
                         const J12 = -a2 * Math.sin(q1 + q2);
                         const J21 = a1 * Math.cos(q1) + a2 * Math.cos(q1 + q2);
                         const J22 = a2 * Math.cos(q1 + q2);
-                        
-                        // Calcular els moments (parells de forces)
+
+                        // tau = J^T * F
                         const tau1 = J11 * fx + J21 * fy;
                         const tau2 = J12 * fx + J22 * fy;
-                        
+
+                        const substeps = `
+                            <p><strong>1.</strong> Jacobiana transposada (numerica):</p>
+                            <div class="math-display">
+                                \\[
+                                J^T =
+                                \\begin{bmatrix}
+                                ${J11.toFixed(6)} & ${J21.toFixed(6)} \\\\
+                                ${J12.toFixed(6)} & ${J22.toFixed(6)}
+                                \\end{bmatrix}
+                                \\]
+                            </div>
+
+                            <p><strong>2.</strong> Càlcul dels parells:</p>
+                            <div class="math-display" style="font-family:var(--mono); text-align:left;">
+                                <pre>
+τ1 = J11*Fx + J21*Fy = ${J11.toFixed(6)}*${fx} + ${J21.toFixed(6)}*${fy} = ${tau1.toFixed(6)}
+τ2 = J12*Fx + J22*Fy = ${J12.toFixed(6)}*${fx} + ${J22.toFixed(6)}*${fy} = ${tau2.toFixed(6)}
+                                </pre>
+                            </div>
+                        `;
+
                         resultsHTML += `
                             <div class="calculation-step">
                                 <h3>Jacobiana Transposada (Forces)</h3>
-                                <p>Calcula el moment parell de forces en les articulacions:</p>
-                                <div class="math-display">
-                                    \\[
-                                    \\begin{bmatrix}
-                                    \\tau_1 \\\\
-                                    \\tau_2
-                                    \\end{bmatrix}
-                                    = J^T
-                                    \\begin{bmatrix}
-                                    F_x \\\\
-                                    F_y
-                                    \\end{bmatrix}
-                                    \\]
-                                </div>
+                                ${createExpandableStep('▶ Veure passos', substeps)}
                                 <div class="result">
-                                    <p>Matriu Jacobiana transposada:</p>
-                                    <p>Jᵀ = 
-                                        \\[
-                                        \\begin{bmatrix}
-                                        ${J11.toFixed(4)} & ${J21.toFixed(4)} \\\\
-                                        ${J12.toFixed(4)} & ${J22.toFixed(4)}
-                                        \\end{bmatrix}
-                                        \\]
-                                    </p>
-                                    <p>Parells de forces en les articulacions:</p>
+                                    <p>Parells d'articulació:</p>
                                     <p>τ₁ = <span class="value-display">${tau1.toFixed(4)}</span> N·m</p>
                                     <p>τ₂ = <span class="value-display">${tau2.toFixed(4)}</span> N·m</p>
                                 </div>
                             </div>
                         `;
                     }
-                    
-                    // Actualitzar els resultats
-                    document.getElementById('results-container').innerHTML = resultsHTML;
-                    
-                    // Reprocessar MathJax per renderitzar les noves equacions
-                    if (window.MathJax) {
-                        MathJax.typesetPromise(['#results-container']).catch(function(err) {
-                            console.log('Error en MathJax:', err);
-                        });
+
+                    // ---------- MOSTRAR RESULTATS PAS A PAS AMB ANIMACIO ----------
+                    const container = document.getElementById('results-container');
+                    container.innerHTML = ''; // netegem contingut anterior
+
+                    // Separem cada "calculation-step" per mostrar-ho un a un (utilitzem <div class="calculation-step">)
+                    // resultsHTML pot contenir múltiples <div class="calculation-step"> concatenats
+                    // Fem una separació segura: fem servir un DOM temporal per parsejar-ho
+                    const tempWrapper = document.createElement('div');
+                    tempWrapper.innerHTML = resultsHTML;
+
+                    const steps = Array.from(tempWrapper.querySelectorAll('.calculation-step'));
+
+                    // Si no hi ha passos (p. ex. cap tipus triat), mostrem un missatge
+                    if (steps.length === 0) {
+                        container.innerHTML = `<div class="calculation-step visible"><p>No hi ha càlculs a mostrar per al tipus seleccionat.</p></div>`;
+                        if (window.MathJax) MathJax.typesetPromise([container]).catch(()=>{});
+                        return;
                     }
-                } catch (error) {
-                    console.error("Error en el cálculo:", error);
+
+                    // Mostrem cada pas amb retards (fen una animació)
+                    steps.forEach((stepElement, idx) => {
+                        // Clonem el node per afegir-lo al container
+                        setTimeout(function () {
+                            // Quan afegim, assegurem la classe visible per activar transició CSS
+                            const clone = document.createElement('div');
+                            clone.className = 'calculation-step'; // mantenim classe
+                            clone.innerHTML = stepElement.innerHTML;
+                            container.appendChild(clone);
+
+                            // Forcem un reflow i afegim la classe visible per animació
+                            requestAnimationFrame(function () {
+                                clone.classList.add('visible');
+                            });
+
+                            // Renderitzem MathJax dins del nou bloc
+                        // Renderitzem MathJax dins del nou bloc
+if (window.MathJax) {
+    // Evitem que MathJax processi els blocs <pre>, ja que contenen text no-LaTeX
+    clone.querySelectorAll('pre').forEach(el => el.setAttribute('data-mathjax-ignore', 'true'));
+
+    // Processa només els elements amb .math-display
+    const mathBlocks = clone.querySelectorAll('.math-display');
+
+    MathJax.typesetPromise(mathBlocks).catch(function (err) {
+        console.error('MathJax typeset error:', err);
+    });
+}
+
+                        }, idx * 900); // 900 ms entre passos (ajustable)
+                    });
+
+                    // Un cop programats tots els passos, amaguem loading un cop acabat el darrer timer
+                    const totalDelay = steps.length * 900 + 120;
+                    setTimeout(function () {
+                        loading.style.display = 'none';
+                        loading.setAttribute('aria-hidden', 'true');
+                    }, totalDelay);
+
+                } catch (err) {
+                    // En cas d'error, mostrem un missatge amigable
                     document.getElementById('results-container').innerHTML = `
-                        <div class="result" style="border-left-color: var(--accent);">
-                            <p class="error">S'ha produït un error en el càlcul. Si us plau, verifica les dades d'entrada.</p>
-                            <p>Detalls: ${error.message}</p>
+                        <div class="calculation-step visible">
+                            <h3>Error</h3>
+                            <div class="result" style="border-left-color: var(--accent);">
+                                <p class="error">S'ha produït un error en el càlcul: ${err.message}</p>
+                                <p>Revisa les entrades i intenta-ho de nou.</p>
+                            </div>
                         </div>
                     `;
-                } finally {
-                    // Ocultar indicador de carga
-                    document.getElementById('loading-indicator').style.display = 'none';
+                    loading.style.display = 'none';
+                    loading.setAttribute('aria-hidden', 'true');
+                    console.error('Error en calculateAll:', err);
                 }
-            }, 100);
+            }, 80); // petit timeout per a spinner
         }
+
+        /************************************************************************
+         * El fitxer conté comentaris extensos i documentació inline per ajudar
+         * a la personalització. A continuació hi ha una secció (opcional) per
+         * exportar els resultats en format CSV / JSON.
+         ************************************************************************/
+
+        // Opcional: exportar resultats a JSON (exposar alguna API local)
+        function exportResultsAsJSON() {
+            const out = {
+                timestamp: new Date().toISOString(),
+                a1: parseFloat(document.getElementById('a1').value),
+                a2: parseFloat(document.getElementById('a2').value),
+                q1_deg: parseFloat(document.getElementById('q1').value),
+                q2_deg: parseFloat(document.getElementById('q2').value)
+            };
+            return out;
+        }
+
+        /* ------------------------------------------------------------------
+         * Aquest HTML està pensat per ser un punt de partida
+         *  - Pots afegir control per seleccionar configuracions (elbow up/down)
+         *  - Pots afegir límits de treball, trajectòries i animació del robot
+         *  - També es pot convertir a una petita SPA (React/Vue) si ho prefereixes
+         *
+         * Fins aquí el codi principal. Si vols, puc:
+         * 1) Afegir una vista gràfica (SVG/Canvas) que dibuixi el robot amb
+         *    interpolació entre configuracions.
+         * 2) Afegir un control "Següent pas" per navegar manualment entre
+         *    les seccions (en comptes d'automàtic).
+         * 3) Permetre exportar totes les operacions numèriques en PDF.
+         *
+         * ------------------------------------------------------------------ */
+
     </script>
+
+    <!--
+        -----------------------------------------------------------------------
+        Fi del fitxer HTML. El contingut anterior inclou:
+         - Estils CSS complets
+         - Input i resultats
+         - MathJax per renderitzar equacions
+         - Lògica per calcular i mostrar subpassos dins de cada càlcul
+         - Botons per expandir/col·lapsar i reset
+        -----------------------------------------------------------------------
+    -->
+
 </body>
 </html>
