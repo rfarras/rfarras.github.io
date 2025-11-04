@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<title>Mesurador de distàncies avançat</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  table { border-collapse: collapse; margin-top: 10px; width: 100%; }
+  th, td { border: 1px solid #ccc; padding: 5px 10px; text-align: center; }
+  input, button { padding: 6px; font-size: 14px; margin: 2px; }
+  #estat { margin-top: 10px; font-style: italic; color: #555; }
+  #map { height: 300px; margin-top: 10px; border: 1px solid #ccc; }
+</style>
+</head>
+<body>
+
+<h2>Mesurador de Latitud i Longitud Avançat</h2>
+
+<label><b>Indica el lloc:</b></label>
+<input id="ubicacioInput" type="text" placeholder="Ex: Punt A">
+<button onclick="mesura()">Mesura</button>
+<button onclick="exportCSV()">Exporta CSV</button>
+<button onclick="exportGPX()">Exporta GPX</button>
+<div id="estat"></div>
+
+<table id="mesuresTable">
+  <tr>
+    <th>#</th>
+    <th>Latitud</th>
+    <th>Longitud</th>
+    <th>Ubicació</th>
+  </tr>
+</table>
+
+<h3>Distàncies pas a pas</h3>
+<div id="distancies"></div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let mesures = [];
+let map = L.map('map').setView([0,0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+let polyline = L.polyline([], {color:'red'}).addTo(map);
+
+function mesura() {
+  const estat = document.getElementById("estat");
+  estat.textContent = "🔍 Obtenint GPS amb precisió alta...";
+
+  if (!navigator.geolocation) {
+    alert("La geolocalització no és compatible amb aquest navegador.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      const ubicacio = document.getElementById("ubicacioInput").value || `Punt ${mesures.length+1}`;
+      mesures.push({lat, lon, ubicacio});
+      document.getElementById("ubicacioInput").value = "";
+      estat.textContent = "✅ Mesura registrada!";
+      actualitzaTaula();
+      calculaDistancies();
+      actualitzaMapa();
+    },
+    (err) => {
+      estat.textContent = "⚠️ Error GPS: " + err.message;
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+}
+
+function actualitzaTaula() {
+  const table = document.getElementById("mesuresTable");
+  table.innerHTML = `
+    <tr>
+      <th>#</th>
+      <th>Latitud</th>
+      <th>Longitud</th>
+      <th>Ubicació</th>
+    </tr>`;
+
+  mesures.forEach((m, i) => {
+    const row = table.insertRow();
+    row.insertCell(0).textContent = i+1;
+    row.insertCell(1).textContent = m.lat.toFixed(6);
+    row.insertCell(2).textContent = m.lon.toFixed(6);
+    const cellUbic = row.insertCell(3);
+    const input = document.createElement("input");
+    input.value = m.ubicacio;
+    input.oninput = () => {
+      mesures[i].ubicacio = input.value;
+      calculaDistancies();
+      actualitzaMapa();
+    };
+    cellUbic.appendChild(input);
+  });
+}
+
+function calculaDistancies() {
+  const div = document.getElementById("distancies");
+  if (mesures.length < 2) {
+    div.innerHTML = "Afegiu almenys dues mesures per calcular distàncies.";
+    return;
+  }
+
+  let html = "";
+  let totalPitag = 0;
+  let totalHav = 0;
+  for (let i = 0; i < mesures.length - 1; i++) {
+    const p1 = mesures[i];
+    const p2 = mesures[i+1];
+
+    const dx = (p2.lon - p1.lon) * Math.cos((p1.lat + p2.lat)/2 * Math.PI/180) * 111.32;
+    const dy = (p2.lat - p1.lat) * 110.574;
+    const distPitag = Math.sqrt(dx*dx + dy*dy);
+    totalPitag += distPitag;
+
+    const R = 6371;
+    const dLat = (p2.lat - p1.lat) * Math.PI/180;
+    const dLon = (p2.lon - p1.lon) * Math.PI/180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(p1.lat*Math.PI/180)*Math.cos(p2.lat*Math.PI/180)*Math.sin(dLon/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distHav = R * c;
+    totalHav += distHav;
+
+    html += `<p><b>${i+1} → ${i+2}:</b> ${p1.ubicacio} → ${p2.ubicacio}<br>
+      Pitàgores: ${distPitag.toFixed(3)} km<br>
+      Haversine: ${distHav.toFixed(3)} km</p>`;
+  }
+
+  html += `<p><b>Total:</b> Pitàgores: ${totalPitag.toFixed(3)} km, Haversine: ${totalHav.toFixed(3)} km</p>`;
+  div.innerHTML = html;
+}
+
+function actualitzaMapa() {
+  const coords = mesures.map(m => [m.lat, m.lon]);
+  polyline.setLatLngs(coords);
+  if (coords.length > 0) map.setView(coords[coords.length-1], 15);
+}
+
+function exportCSV() {
+  if (mesures.length === 0) return alert("No hi ha mesures per exportar.");
+  let csv = "Latitud,Longitud,Ubicació\n";
+  mesures.forEach(m => csv += `${m.lat},${m.lon},${m.ubicacio}\n`);
+  const blob = new Blob([csv], {type: "text/csv"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "mesures.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportGPX() {
+  if (mesures.length === 0) return alert("No hi ha mesures per exportar.");
+  let gpx = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Mesurador">
+<trk><name>Ruta GPS</name><trkseg>\n`;
+  mesures.forEach(m => {
+    gpx += `<trkpt lat="${m.lat}" lon="${m.lon}"><name>${m.ubicacio}</name></trkpt>\n`;
+  });
+  gpx += "</trkseg></trk></gpx>";
+  const blob = new Blob([gpx], {type: "application/gpx+xml"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "ruta.gpx";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
