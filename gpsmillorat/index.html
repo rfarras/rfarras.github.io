@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ca">
 <head>
@@ -8,7 +7,9 @@
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; }
   table { border-collapse: collapse; margin-top: 10px; width: 100%; }
+  /*Border-collapse el que fa és la doble línia per defecte en tota la taula covertir-la, colapsar-la */
   th, td { border: 1px solid #ccc; padding: 5px 10px; text-align: center; }
+  /*El borde és la cantonada que veiem i el que hi ha forma es diu margin i el marge que hi ha per dintre és el padding*/
   input, button { padding: 6px; font-size: 14px; margin: 2px; }
   #estat { margin-top: 10px; font-style: italic; color: #555; }
   #map { height: 300px; margin-top: 10px; border: 1px solid #ccc; }
@@ -19,7 +20,26 @@
 <h2>Mesurador de Latitud i Longitud Avançat</h2>
 
 <label><b>Indica el lloc:</b></label>
+  <!--Es una etiqueta per escriure que acompanya a un textbox o caixa de text o definida per un input.
+  L'input de més abaix no accepta numbers només accepta text i té un text per defecte definit per la propietat placeholder.-->
 <input id="ubicacioInput" type="text" placeholder="Ex: Punt A">
+  <!--A continuació tenim tres botons que quan els cliquem s'executan les funcions de la línia function mesura(){instuccions...}
+  i els altres dos botons cridran les funcions de javascript gràcies a la propietat o atribut onclick
+  CSV significa comma separated values o valors separats per coma i és la forma més fàcil de guardar dades per exemple 
+  latitud, longitud 
+  41.2,2.1
+  41.3,2.2
+  El he escrit més amunt és un csv i és compatible amb excel o llibreofice calc o qualsevol programa de dades o taules
+  Creem un funció anomenada function exportCSV(){instuccions que guarden les dades de latitu i longitud}
+  Gpx significa GPs eXchange forma és un fitxer tipus XML que serveix per emmagatzemar i intercanviar dades gps
+  Xml és molt potent perquè és extensible a qualsevol etiqueta que m'invento per exemple <brandcar>Seat</brandcar>
+  El gpx té unes etiquetes propies, la primera és <trk> que es genera dintre de la function exportGPX ()
+  Trk significa tracks o trajectes que són registres de camins o rutes seguits formats per una serie de punts (latitud, longitut ordenats 
+  cronologicament)
+    Dintre del trk hi ha una etiqueta <name> que hi ha el nom de la ruta, i a continuación hi ha una etiqueta trkpt, abans hi ha un trkseg
+      que es una secuencia de trkpt o track points que a vegades s'anomenen waypoints o punts de referencia, cada track point té una latitud i una longitud
+  per exemple <trkpt lat="41.842" lon="1.936"></trkpt>
+  -->
 <button onclick="mesura()">Mesura</button>
 <button onclick="exportCSV()">Exporta CSV</button>
 <button onclick="exportGPX()">Exporta GPX</button>
