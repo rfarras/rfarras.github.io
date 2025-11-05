@@ -39,6 +39,10 @@
     Dintre del trk hi ha una etiqueta <name> que hi ha el nom de la ruta, i a continuación hi ha una etiqueta trkpt, abans hi ha un trkseg
       que es una secuencia de trkpt o track points que a vegades s'anomenen waypoints o punts de referencia, cada track point té una latitud i una longitud
   per exemple <trkpt lat="41.842" lon="1.936"></trkpt>
+  Podem afegir més etiquetes  com per exemple <ele> que significa elevació que és l'alçada en mettres del punt
+  GPX és u ormat obert, és a dir, que no hi ha cap empresa propietaria i es un format molt utilitzat per dispositius gps, per 
+  programes que utilitzen mapes digitals o per apps que utilitzen rutes. És compatibles amb gis que son sistemes d'informaació geogràfica.
+  
   -->
 <button onclick="mesura()">Mesura</button>
 <button onclick="exportCSV()">Exporta CSV</button>
@@ -60,19 +64,36 @@
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- La línia 66 carrega leaflet.js i fa possible que funcionin els mapes. Leaflet és una biblioteca javascript de codi obert. Tothom té accés
+  i pot veure internament el codi.
+Per exeple google maps no és un codi obert, pertany a google, és codi tancat o codi propietari que no només no puc veure
+  toot sinó que tampoc el puc modificar (similar a libreoffice(és gratis i de ci obert i inclou editor de text o editor de diapositives
+  o editor dde full de càlculs que es diu calc, en canvi en micrsoft office, concretament word.
+  Leaflet fa mapes interactius compatibles amb el mòbil.-->
 <script>
+  /*let mesures ssignifica crear una variable global perquè afecta a tot l'scriipt que comença a la línia 73 i la iniciallitzem amb un conjunt 
+  de valors [] qu es coneix com array buit amb l'intenció d'emmagatzemar lectures gps de latitut i longitut.
+  let map crea una instància de maapa tipus leaflet i l'assigna a un element, al que tingui una id anomenada maap que en aquest cas es un divisor o  està 
+  a la línia 63 i que es el lloc on apareixerà el mapa. Si no hi hagués escritla línia 63, la 81 generaria un error ja que no trobaria un lloc on posar el mapa.
+  El setView dona una visita inicial del mapa i  les coordenades inicials son 0,0 que està situat en el Golf de Guinea i 2 és el zoom, que és molt allunyat. Quan més ampliem més coses 
+  més específiques veurem.*/
 let mesures = [];
 let map = L.map('map').setView([0,0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  /*L.tileLayer, tile sigifica mosaic per tant és una capa                */
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
+  /* addTo(map) */
 let polyline = L.polyline([], {color:'red'}).addTo(map);
-
+/*Polyline */
 function mesura() {
+  /*function mesura*/
   const estat = document.getElementById("estat");
+  /*Variable definida com a constant és una variable però que té molt pocs vaalors constants */
   estat.textContent = "🔍 Obtenint GPS amb precisió alta...";
 
   if (!navigator.geolocation) {
+    /* ! (VOL DIR NEGACIÓ) */
     alert("La geolocalització no és compatible amb aquest navegador.");
     return;
   }
