@@ -31,15 +31,24 @@
     <style>
         /* ===== COLORS & ROOT VARIABLES ===== */
         :root{
-/* Significa arrel en anglès. és una paraula que s'utilitza molt en el món informàtic,
-per exemple el linux , que és un sistema operatiu alternatiu i millor que el windows.
-En aquest cas cas root significa l'element significa el document arrel en html, aquest és el propi html.
-Antigament es deia html {propietat: valor}, però es fa servir "root {--variable:valor}" perquè té una prioritat més alta que html.
-Perquè tots els estils que estiguin dintre de root afectaran a tota la pàgina web html. Perquè "--variable" és una variable CSS global,
-que puc utilitzar vàries vegades. Aquestes variables s'anomenen variables CSS personalitzades , o custom propierties.
-Per exemple la variable primaryés un color que surt diverses vegades, per exemple en botons. 
-Això permet tenir el codi més organitzat , perquè el canvio una vegada en el root i canvia en diferents llocs alhora.
-El primary és el color principal de la web, en aquest cas són tons foscos. */
+            /* Significa arrel en angles, es una paraula que s'utilitza molt en el món informàtic, per exemple el linux, que es un sistema operatiu 
+            alternatiu i millor que el windows. En aquest cas root significa l'element significa el document arrel del html, aquest és el propi html.
+            Antigament es deia html "{propietat: valor}" , però es fa servir "root{--variable:valor}" perque té una prioritat més alta que html. 
+            Perque tot els estils que estiguin dintre de root afectaran a tota la pagina web html. Perque "--variable" és una variable CSS global,
+            que puc utilitzar vàries vegades. Aquestes variables s'anomenen variables CSS personalitzades, o custom propierties. 
+            Per exemple la variable primary és un color que surt diverses vegades, per exemple en botons d'aquest mateix color en el fons, en els titols, en àrees, com header
+            que es la capçelera principal. Això permet tenir el codi més organitzat, perquè el canvio una vegada en el root i es canvia en diferents 
+            llocs a la vegada. També permet codis més coherents visualment, ja que és el mateix color, i és més fàcil d'ampliar, com el mode fosc i clar,
+            El primary és el color principal de la web, en aquest cas só tons foscos per capçeleres i fons.
+            El secondary é sun color secundari i s'aplica en enllaços i coses que li vols donar importància.
+            El accent dona encara més importància, per alertes o botons importants.
+            Light és un color clar que és fa servir per fons o textos suaus, que no vulguis destacar o per marcar que és una cosa diferent.
+            Muted és un color apagat per textos secundaris.
+            Succes é sun color verd, que significa exit o que s'ha fet bé.
+            Card-bg és el fons d'una targeta o contenidor.
+            Glass és un efecte de vidre translucid, perque 0.6 és el canal alpha o transparència que va desprès de rgb, que significa el color.
+            Radius és el arrodoniment de les cantonades lg= arrodoniment gran (large) sm= arrodoniment petit (small).
+            Shadow és una ombra suau per donar profunditat a un block o contenedor. */
             --primary: #2c3e50;
             --secondary: #3498db;
             --accent: #e74c3c;
@@ -55,7 +64,8 @@ El primary és el color principal de la web, en aquest cas són tons foscos. */
         }
 
         /* ===== BASIC LAYOUT ===== */
-        *{box-sizing:border-box}
+        *{box-sizing:border-box} 
+        /* L'asterisc * és un selector universal, per exemple si jo vull buscar un docuemnt i no m'en recordo del seu nom poso "*.docx" */
         html,body{
             height:100%;
             margin:0;
