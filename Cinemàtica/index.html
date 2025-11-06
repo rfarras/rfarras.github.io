@@ -64,7 +64,14 @@
 
         /* ===== BASIC LAYOUT ===== */
         *{box-sizing:border-box} 
-        /* L'asterisc * és un selector universal, per exemple si jo vull buscar un docuemnt i no m'en recordo del seu nom poso "*.docx" */
+        /* L'asterisc "*" és un selector universal, per exemple si jo vull buscar un docuemnt i no m'en recordo del seu nom poso 
+        " *.docx " i apareixen tots els documents.
+        Si poso "*.js" buscara tots els documents que tenen js(javascript). 
+        Posar un asterisc afecta a totes les etiquetes html.
+        La propietat box-sizing cobtrola com es calcula l'amplada i l'alçada d'un element, concretament si el padding i el border s'inclouen dins 
+        de la mida o no. En el cas borderbox, que es el valor de la propietat box-sizing, l'amplada i l'alçada de tots els elements inclouen el border
+        i el padding, en canvi si en comptes de border-bix posés content-box ñ'amplada total seria és gran i hauries de sumar el padding i el border.
+        És més fàcil per un disenyador perque pot fer border-box perquè té en comte totes les mides, i apliques el box mode.  */
         html,body{
             height:100%;
             margin:0;
@@ -72,15 +79,23 @@
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg,#f5f7fa 0%, #d8e1ef 100%);
             color:#222;
+/*Color és el color del text*/
         }
 
         .app {
+/*Quan hi ha un punt abans de app significa que és un identificador o id. A la la línia 305 hi ha un contenidor o divisor o divisor que 
+tindrà una amplada màxima i uns marges on estaran els resultats.  */
             max-width: 1100px;
             margin: 28px auto;
             padding: 20px;
         }
 
         header {
+/*A una pàgina web por haver una capçelera, o hader i a la part inferior un peu de pàgia o footer.
+Quan el gradient lineal és de 90 graus, perquè posa 90deg (90 deegres) vol dir que giro la pantalla
+90 graus vol dir que en quin setit va el degradat de colors, en aquest cas gira a la dreta. Si és 180 graus 
+significa que el de va cap a bottom (a baix), 270deg seria cap a left (esquerra).
+Linear gradient té tres arguments que són el angle, color inicial i el fianl.*/
             background: linear-gradient(90deg,var(--primary),#24414a);
             color: #fff;
             padding: 22px;
