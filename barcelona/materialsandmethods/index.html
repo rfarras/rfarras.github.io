@@ -1,9 +1,9 @@
 <div style="max-width:1400px;margin:auto;font-family:Arial,Helvetica,sans-serif;line-height:1.5">
-<h1> In our project we have been working with R Studio</h1>
+<h1 style="text-align:center;"> USING R STUDIO AND ITS COMMANDS </h1>
+<p> In our project we have been working with R Studio:an integrated development environment (IDE) designed specifically for working with the R programming language, focusing on data analysis and statistics. What sets it apart is its ability to simplify the process of writing code, debugging, and visualizing results, all within a single platform.
 <p> To obtain the results of our research we have used diferent commands. This page will explain what work do every command that we have wrote until obtain the graphics.<p/>
-<h2>1. Environment Setup</h2>
+<h2>1. ENVIRONTMENT SETUP</h2>
 <p>These commands prepare RStudio with the tools needed to work with air quality data.</p>
-
 <ul>
 <li><b>install.packages(c("openair","tidyverse","lares"))</b>: Downloads the libraries from the internet.</li>
 <li><b>library(tidyverse)</b>: Loads a group of tools used for cleaning and organizing data.</li>
@@ -12,7 +12,7 @@
 <li><b>library(openair)</b>: Package designed for air quality and wind data analysis.</li>
 </ul>
 
-<h2>2. Data Import and Reshaping</h2>
+<h2>2. DATA IMPORT AND RESHAPING </h2>
 <p>Air pollution data often comes in a <b>wide format</b> (one column for each hour).  
 These commands change it into a <b>long format</b> (one row for each observation) which is needed to create plots.</p>
 
@@ -22,7 +22,7 @@ These commands change it into a <b>long format</b> (one row for each observation
 <li><b>city2 &lt;- city1[-c(1,2,4,6:16)]</b>: Removes columns that are not needed to keep the dataset cleaner.</li>
 </ul>
 
-<h2>3. Date and Time Formatting</h2>
+<h2>3. DATE AND TIME FORMATTING</h2>
 <p>Computers treat dates as text unless we convert them into real <b>time objects</b>.  
 This step is very important for time-series analysis.</p>
 
@@ -33,7 +33,7 @@ This step is very important for time-series analysis.</p>
 <li><b>as.factor(city2$pollutant)</b>: Changes pollutant names into categories so they can be grouped in plots.</li>
 </ul>
 
-<h2>4. Advanced Visualization (openair)</h2>
+<h2>4. ADVANCED VISUALIZATION (openair)</h2>
 <p>These functions automatically create environmental charts.</p>
 
 <ul>
