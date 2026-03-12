@@ -1,43 +1,43 @@
-<div style="max-width:1200px;margin:auto;font-family:Arial,Helvetica,sans-serif;line-height:1.6">
+<div style="max-width:1500px;margin:auto;font-family:Arial,Helvetica,sans-serif;line-height:1.6">
 
 <h2>1. Environment Setup</h2>
-<p>These commands prepare RStudio with the necessary tools to handle air quality data.</p>
+<p>These commands prepare RStudio with the tools needed to work with air quality data.</p>
 
 <ul>
-<li><b>install.packages(c("openair","tidyverse","lares"))</b>: Downloads the external libraries from the internet.</li>
-<li><b>library(tidyverse)</b>: Loads a collection of tools for data cleaning and transformation.</li>
-<li><b>library(dplyr)</b>: Loads a specific part of Tidyverse used for manipulating data frames.</li>
-<li><b>library(lares)</b>: Library used for mass text replacement and cleaning messy strings.</li>
-<li><b>library(openair)</b>: Specialized package for air quality and wind analysis.</li>
+<li><b>install.packages(c("openair","tidyverse","lares"))</b>: Downloads the libraries from the internet.</li>
+<li><b>library(tidyverse)</b>: Loads a group of tools used for cleaning and organizing data.</li>
+<li><b>library(dplyr)</b>: Loads a part of Tidyverse used to modify and organize data tables.</li>
+<li><b>library(lares)</b>: Library used to replace text and clean messy strings.</li>
+<li><b>library(openair)</b>: Package designed for air quality and wind data analysis.</li>
 </ul>
 
 <h2>2. Data Import and Reshaping</h2>
-<p>Raw pollution data often comes in a <b>wide format</b> (one column per hour).  
-These commands convert it into a <b>long format</b> (one row per observation) which is required for plotting.</p>
+<p>Air pollution data often comes in a <b>wide format</b> (one column for each hour).  
+These commands change it into a <b>long format</b> (one row for each observation) which is needed to create plots.</p>
 
 <ul>
-<li><b>city &lt;- read.csv("...")</b>: Downloads the raw CSV file and stores it in a variable named <i>city</i>.</li>
-<li><b>pivot_longer(city, cols=c(h01...h24), names_to="hour", values_to="value")</b>: Converts the 24 hourly columns into two columns: hour and value.</li>
-<li><b>city2 &lt;- city1[-c(1,2,4,6:16)]</b>: Removes unnecessary columns to keep the dataset clean.</li>
+<li><b>city &lt;- read.csv("...")</b>: Downloads the CSV file and saves it in a variable called <i>city</i>.</li>
+<li><b>pivot_longer(city, cols=c(h01...h24), names_to="hour", values_to="value")</b>: Changes the 24 hourly columns into two columns: hour and value.</li>
+<li><b>city2 &lt;- city1[-c(1,2,4,6:16)]</b>: Removes columns that are not needed to keep the dataset cleaner.</li>
 </ul>
 
 <h2>3. Date and Time Formatting</h2>
-<p>Computers treat dates as text unless we convert them into proper <b>time objects</b>.  
-This step is essential for time-series analysis.</p>
+<p>Computers treat dates as text unless we convert them into real <b>time objects</b>.  
+This step is very important for time-series analysis.</p>
 
 <ul>
-<li><b>mutate(date = paste0(data, " ", hour))</b>: Creates a new column combining date and hour.</li>
-<li><b>replaceall(city2, ...)</b>: Cleans messy timestamp text and standardizes times.</li>
-<li><b>as.POSIXct(city2$date, ..., tz="Europe/Madrid")</b>: Converts the date column into a proper datetime object.</li>
-<li><b>as.factor(city2$pollutant)</b>: Converts pollutant names into categories for plotting.</li>
+<li><b>mutate(date = paste0(data, " ", hour))</b>: Creates a new column that joins the date and the hour.</li>
+<li><b>replaceall(city2, ...)</b>: Cleans messy time text and standardizes the time format.</li>
+<li><b>as.POSIXct(city2$date, ..., tz="Europe/Madrid")</b>: Converts the date column into a proper datetime format.</li>
+<li><b>as.factor(city2$pollutant)</b>: Changes pollutant names into categories so they can be grouped in plots.</li>
 </ul>
 
 <h2>4. Advanced Visualization (openair)</h2>
-<p>These functions automatically generate environmental charts.</p>
+<p>These functions automatically create environmental charts.</p>
 
 <ul>
-<li><b>timeVariation(city2)</b>: Shows pollution changes by hour, weekday, and month.</li>
-<li><b>trendLevel(city2, pollutant="H2S")</b>: Creates a heatmap to identify long-term pollution trends.</li>
+<li><b>timeVariation(city2)</b>: Shows how pollution changes by hour of the day, day of the week, and month.</li>
+<li><b>trendLevel(city2, pollutant="H2S")</b>: Creates a heatmap to see pollution trends over time.</li>
 </ul>
 
 </div>
