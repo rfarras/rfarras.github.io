@@ -1,6 +1,10 @@
-<section style="max-width:900px;margin:auto;font-family:Arial,Helvetica,sans-serif;line-height:1.6">
-
-<h2>1. Environment Setup</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<
+h2>1. Environment Setup</h2>
 <p>These commands prepare RStudio with the necessary tools to handle air quality data.</p>
 
 <ul>
@@ -42,5 +46,4 @@ This section is critical for time-series analysis.</p>
 <li><code>timeVariation(city2, ...)</code> – Creates a four-panel plot showing how pollution changes by hour of the day, day of the week, and month of the year.</li>
 <li><code>trendLevel(city2, pollutant="H2S", ...)</code> – Generates a heatmap showing concentrations across months and years to identify long-term trends.</li>
 </ul>
-
-</section>
+</html>
