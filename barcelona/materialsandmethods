@@ -1,0 +1,46 @@
+<section style="max-width:900px;margin:auto;font-family:Arial,Helvetica,sans-serif;line-height:1.6">
+
+<h2>1. Environment Setup</h2>
+<p>These commands prepare RStudio with the necessary tools to handle air quality data.</p>
+
+<ul>
+<li><code>install.packages(c("openair","tidyverse","lares"))</code> – Downloads the external libraries from the internet.</li>
+<li><code>library(tidyverse)</code> – Loads a collection of tools for data cleaning and transformation.</li>
+<li><code>library(dplyr)</code> – Loads a specific part of Tidyverse used for manipulating data frames (using pipes %&gt;%).</li>
+<li><code>library(lares)</code> – Loads a library used here for mass text replacement (cleaning messy strings).</li>
+<li><code>library(openair)</code> – Loads the specialized package for air quality and wind analysis.</li>
+</ul>
+
+
+<h2>2. Data Import and Reshaping</h2>
+<p>Raw pollution data often comes in a <strong>"Wide"</strong> format (one column per hour).  
+These commands convert it into a <strong>"Long"</strong> format (one row per observation), which is required for plotting.</p>
+
+<ul>
+<li><code>city &lt;- read.csv("...")</code> – Downloads the raw CSV file and stores it in a variable named <strong>city</strong>.</li>
+<li><code>pivot_longer(city, cols=c(h01...h24), names_to="hour", values_to="value")</code> – Takes the 24 hourly columns and collapses them into two columns: one identifying the hour and one with the actual measurement.</li>
+<li><code>city2 &lt;- city1[-c(1,2,4,6:16)]</code> – Removes unnecessary columns by their index number to keep the dataset clean.</li>
+</ul>
+
+
+<h2>3. Date and Time Formatting</h2>
+<p>Computers treat dates as text unless we explicitly convert them into <strong>time objects</strong>.  
+This section is critical for time-series analysis.</p>
+
+<ul>
+<li><code>mutate(date = paste0(data, " ", hour))</code> – Creates a new column by merging the <em>Date</em> string and the <em>Hour</em> string.</li>
+<li><code>replaceall(city2, c("T00:00..."), c(" 01:00..."))</code> – Cleans messy timestamp text and standardizes clock times (00:00 to 23:00).</li>
+<li><code>as.POSIXct(city2$date, ..., tz="Europe/Madrid")</code> – Converts the text in the date column into a formal <strong>Datetime</strong> object using the Barcelona time zone.</li>
+<li><code>as.factor(city2$pollutant)</code> – Converts pollutant names (NO2, O3, etc.) into categorical values so R can group them in charts.</li>
+</ul>
+
+
+<h2>4. Advanced Visualization (The "openair" magic)</h2>
+<p>These functions automatically generate complex environmental charts.</p>
+
+<ul>
+<li><code>timeVariation(city2, ...)</code> – Creates a four-panel plot showing how pollution changes by hour of the day, day of the week, and month of the year.</li>
+<li><code>trendLevel(city2, pollutant="H2S", ...)</code> – Generates a heatmap showing concentrations across months and years to identify long-term trends.</li>
+</ul>
+
+</section>
