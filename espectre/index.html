@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<title>RGB Spectrum</title>
+
+<style>
+body{background:#0a0f1f;color:white;font-family:Arial;text-align:center}
+canvas{border:1px solid #333;border-radius:10px;margin-top:10px}
+#indicator{position:relative;width:3px;height:80px;background:white;margin-top:-80px}
+#console{height:150px;overflow:auto;background:black;padding:10px;font-family:monospace;text-align:left}
+#colorBox{width:100px;height:100px;margin:10px auto;border:2px solid white;border-radius:10px}
+.controls{margin:15px}
+button{margin:5px;padding:8px}
+</style>
+</head>
+
+<body>
+
+<h2>🌈 Espectre RGB amb Arduino</h2>
+
+<canvas id="spectrum" width="800" height="80"></canvas>
+<div id="indicator"></div>
+
+<div id="colorBox"></div>
+
+<p id="info"></p>
+
+<div class="controls">
+<input type="range" id="slider" min="380" max="780" value="380">
+<input type="number" id="num" min="380" max="780" value="380">
+<br>
+<button onclick="toggleAuto()">Auto ON/OFF</button>
+<button onclick="connectSerial()">Connectar Arduino</button>
+<button onclick="clearConsole()">Netejar consola</button>
+</div>
+
+<canvas id="chart" width="800" height="150"></canvas>
+
+<div id="console"></div>
+
+<h3>Codi Arduino</h3>
+<pre id="arduino"></pre>
+
+<script>
+
+// ==== ELEMENTS ====
+const canvas = document.getElementById("spectrum");
+const ctx = canvas.getContext("2d");
+const indicator = document.getElementById("indicator");
+const info = document.getElementById("info");
+const consoleBox = document.getElementById("console");
+const slider = document.getElementById("slider");
+const num = document.getElementById("num");
+const colorBox = document.getElementById("colorBox");
+
+const chart = document.getElementById("chart");
+const cctx = chart.getContext("2d");
+
+let port, writer;
+
+// ==== FUNCIONS COLOR ====
+function wavelengthToRGB(w){
+  let r=0,g=0,b=0;
+
+  if (w<440){ r=-(w-440)/60; b=1;}
+  else if (w<490){ g=(w-440)/50; b=1;}
+  else if (w<510){ g=1; b=-(w-510)/20;}
+  else if (w<580){ r=(w-510)/70; g=1;}
+  else if (w<645){ r=1; g=-(w-645)/65;}
+  else{ r=1;}
+
+  let f=1;
+  if(w>700)f=0.3+0.7*(780-w)/80;
+  if(w<420)f=0.3+0.7*(w-380)/40;
+
+  return {
+    r:Math.round(r*f*255),
+    g:Math.round(g*f*255),
+    b:Math.round(b*f*255)
+  };
+}
+
+// gamma correction LED realista
+function gamma(c){
+  return Math.pow(c/255,2.2)*255;
+}
+
+// inversa aproximada
+function rgbToWavelength(r,g,b){
+  return 380 + (r/(r+g+b+1))*400;
+}
+
+// ==== ESPECTRE ====
+function drawSpectrum(){
+  for(let x=0;x<canvas.width;x++){
+    let w=380+(x/canvas.width)*400;
+    let c=wavelengthToRGB(w);
+    ctx.fillStyle=`rgb(${c.r},${c.g},${c.b})`;
+    ctx.fillRect(x,0,1,canvas.height);
+  }
+}
+drawSpectrum();
+
+// ==== CONTROL ====
+let wavelength=380;
+let autoMode=true;
+
+slider.oninput=()=>{syncInput(slider.value);}
+num.oninput=()=>{syncInput(num.value);}
+
+function syncInput(val){
+  wavelength=parseFloat(val);
+  slider.value=val;
+  num.value=val;
+  update();
+}
+
+function toggleAuto(){autoMode=!autoMode;}
+function clearConsole(){consoleBox.innerHTML="";}
+
+// ==== UPDATE ====
+function update(){
+  let rgb=wavelengthToRGB(wavelength);
+
+  let x=((wavelength-380)/400)*canvas.width;
+  indicator.style.marginLeft=x+"px";
+
+  let gr=gamma(rgb.r);
+  let gg=gamma(rgb.g);
+  let gb=gamma(rgb.b);
+
+  colorBox.style.background=`rgb(${gr},${gg},${gb})`;
+
+  info.innerHTML=
+  `λ=${wavelength.toFixed(1)} nm |
+   RGB=(${rgb.r},${rgb.g},${rgb.b}) |
+   Inversa≈${rgbToWavelength(rgb.r,rgb.g,rgb.b).toFixed(1)} nm`;
+
+  let line=document.createElement("div");
+  line.textContent=`λ=${wavelength.toFixed(1)} → RGB(${rgb.r},${rgb.g},${rgb.b})`;
+  consoleBox.appendChild(line);
+  consoleBox.scrollTop=consoleBox.scrollHeight;
+
+  drawChart(rgb);
+
+  sendToArduino(rgb);
+}
+
+// ==== GRÀFICA ====
+let history=[];
+
+function drawChart(rgb){
+  history.push(rgb);
+  if(history.length>100) history.shift();
+
+  cctx.clearRect(0,0,chart.width,chart.height);
+
+  history.forEach((c,i)=>{
+    let x=i*8;
+    cctx.fillStyle="red";
+    cctx.fillRect(x,150-c.r/2,2,2);
+    cctx.fillStyle="green";
+    cctx.fillRect(x,150-c.g/2,2,2);
+    cctx.fillStyle="blue";
+    cctx.fillRect(x,150-c.b/2,2,2);
+  });
+}
+
+// ==== LOOP ====
+function loop(){
+  if(autoMode){
+    wavelength+=1.5;
+    if(wavelength>780) wavelength=380;
+    slider.value=wavelength;
+    num.value=wavelength;
+  }
+  update();
+  setTimeout(loop,50);
+}
+loop();
+
+// ==== SERIAL ====
+async function connectSerial(){
+  try{
+    port=await navigator.serial.requestPort();
+    await port.open({baudRate:9600});
+    writer=port.writable.getWriter();
+  }catch(e){
+    alert("Error Serial");
+  }
+}
+
+function sendToArduino(rgb){
+  if(writer){
+    let msg=`${rgb.r},${rgb.g},${rgb.b}\n`;
+    writer.write(new TextEncoder().encode(msg));
+  }
+}
+
+// ==== ARDUINO ====
+document.getElementById("arduino").textContent=`
+void loop(){
+ if(Serial.available()){
+  String s=Serial.readStringUntil('\\n');
+  int r,g,b;
+  sscanf(s.c_str(),"%d,%d,%d",&r,&g,&b);
+  analogWrite(9,r);
+  analogWrite(10,g);
+  analogWrite(11,b);
+ }
+}
+`;
+
+</script>
+
+</body>
+</html>
