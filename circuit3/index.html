@@ -1,1 +1,91 @@
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/es/core.min.js" integrity="sha512-GuVoeU19Vs7el8GKo3lq2ogzwCIRBuQDnSL0rtHD4KVq3EymKgG4Uj/SEbbggJ+o+ocAcwdbn8hPSgdVPKdPlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/arduino.min.js" integrity="sha512-eh2wmSyRpwi1UaeOo63nlxYLgYkG2WAZ6grr5bXPHXwvyKe3oyY9gZBvoeJS20tNwqUIsrkWOca9ppRz2f50zg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/es/languages/arduino.min.js" integrity="sha512-mE0sMLPrxRkL2hgpaCI99Gnh4nu758DLI/EcW+C4J7FkvFJpL0guBcSJjEYTaVa0yEQ2a0/l+ONtlDB0qnUh1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/arduino-light.min.css" integrity="sha512-M4nH9C7TRCVWLGruh9fHTfYxGWDiKpOGNjpfC9irhF06aLiYmJczZlW+/6IKOZ+75AGk4Wn4clgd6J13T0zzXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" integrity="sha512-rO+olRTkcf304DQBxSWxln8JXCzTHlKnIdnMUwYvQa9/Jd4cQaNkItIUj6Z4nvW1dqK0SKXLbn9h4KwZTNtAyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script>document.addEventListener('DOMContentLoaded', (event) => {
+  document.querySelectorAll('pre code').forEach((block) => {
+    hljs.highlightElement(block);
+  });
+});</script>
+    
+  </head>
+    
+       
+    <body> 
+     <iframe width="725" height="453" src="https://www.tinkercad.com/things/3nSsBLTv0ND-intensitat-led" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"> </iframe>
+       <pre><code class="language-arduino">
+         
+// ────────────────────────────────────────────────
+// VARIABLES GLOBALS (visibles a tot el programa)
+// ────────────────────────────────────────────────
+const int pinLed       = 11;     // Pin PWM (\~) on connectem el LED
+const int upButton     = 2;      // Botó per AUGMENTAR intensitat
+const int downButton   = 3;      // Botó per REDUIR intensitat
 
+int  brightness = 0;             // Valor actual (0 = apagat, 255 = màxim)
+const int step      = 17;        // Canvi per cada pulsació (255 ÷ 17 ≈ 15 passos)
+
+bool lastUpState   = HIGH;       // Últim estat conegut del botó pujar
+bool lastDownState = HIGH;       // Últim estat conegut del botó baixar
+
+// ────────────────────────────────────────────────
+// SETUP – s’executa només un cop quan engeguem l’Arduino
+// ────────────────────────────────────────────────
+void setup() {
+  Serial.begin(115200);          // Per veure la brillantor pel monitor sèrie
+  Serial.println("Control LED amb botons iniciat");
+
+  pinMode(LED_BUILTIN, OUTPUT);  // LED integrat a la placa (per debug)
+  pinMode(pinLed,      OUTPUT);  // El nostre LED extern
+
+  // Els botons utilitzen resistència interna PULL-UP
+  pinMode(upButton,   INPUT_PULLUP);
+  pinMode(downButton, INPUT_PULLUP);
+}
+
+// ────────────────────────────────────────────────
+// LOOP – s’executa infinitament
+// ────────────────────────────────────────────────
+void loop() {
+  // Llegim l’estat actual dels botons
+  bool upState   = digitalRead(upButton);
+  bool downState = digitalRead(downButton);
+
+  // Detectem caiguda de flanc (HIGH → LOW) → botó acabat de prémer
+  if (lastUpState == HIGH && upState == LOW) {
+    brightness += step;
+    if (brightness > 255) brightness = 255;   // Límit superior
+    delay(200);                                // Anti-rebot simple
+  }
+
+  if (lastDownState == HIGH && downState == LOW) {
+    brightness -= step;
+    if (brightness < 0) brightness = 0;       // Límit inferior
+    delay(200);                                // Anti-rebot simple
+  }
+
+  // Actualitzem l’estat anterior per la següent volta
+  lastUpState   = upState;
+  lastDownState = downState;
+
+  // Enviem el valor PWM al LED (0 → 255)
+  analogWrite(pinLed, brightness);
+
+  // Mostrem el valor actual al monitor sèrie
+  Serial.println(brightness);
+
+  // Petit retard per no saturar el port sèrie
+  delay(200);
+
+  // ── Opció debug: parpelleig lent del LED integrat ──
+  //digitalWrite(LED_BUILTIN, HIGH);
+  //delay(1000);
+  //digitalWrite(LED_BUILTIN, LOW);
+  //delay(1000);
+}
+  
+</html>
