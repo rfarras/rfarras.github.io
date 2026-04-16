@@ -25,11 +25,13 @@
   <body>
   <h1>Elements electrònics per detectar un mòbil</h1>
   <ol>
-    <li>Microcontrolador(cervell): necessitem un component que porocessi i desideixi que fer: encendre el LED, mesurar la intensitat d'un LED
+ <li>MICROCONTROLADOR(cervell): necessitem un component que porocessi i desideixi que fer: encendre el LED, mesurar la intensitat d'un LED
       proporcional a la distància del mòbi encès. També es pot fer un brunzidor, pantalles OLED o pantalles LCD en una caixa impresa de 3D</li>
- <li>Antena de cable o anell de Hertz: Al 1886 Hertz va utilitzar una ampolla de Leiden per generar un camp magnètic, en el nostre cas l'ampolla
+ <li>ANELL DE HERTZ: Al 1886 Hertz va utilitzar una ampolla de Leiden per generar un camp magnètic, en el nostre cas l'ampolla
    serà el mòbil que té un camp magnètic molt més petit</li>
   <img src="hertz_experim_1.jpg">
+ <li>COMPONENTS AMPLIFICADORS: Pot ser amplificador operacional o diodes amplificadors    </li> 
+  <img src="lm741.jpg" widht="643" height="292">
 $$f=\frac{v}{\lambda}$$
 
 $$f=\text{freqüència (cicles/s)}$$
@@ -66,8 +68,28 @@ c=3·10^8 m/s dividit per 1800 MHz= 1800·10^6 cicles/s que dona 0,16667m = 16,6
     <p>Agafem un cable d'electronica rigid (AWG 22 (el més comú): té un diàmetre de 0,64), el pelem i un cop pelat el deixem un espai de 5mm obert. Es comporta com un condesador i una
     bobina perquè pot circular corrent electrica molt debil que provè del camp magnetic del mòbil que genera un camp electric.Es a dir, el mòbil genera un camp magnetic que indueix el corrent que a moure electrons en el cure
     que composa l'Aro de Hertz</p>
-<P>La fórmula anterior es coneix com a fórmula de freqüència o ressonància i és important perquè ens diu</P>
 
+<p>La fórmula anterior es coneix com a fórmula de freqüència de resonància i és important perquè ens diu la relació
+  que hi ha entre la freqúència que volem detectar què és la del mòbil com per expemple 1800MHz amb dos paràmetres d'elemnts 
+  electrònics del circuit. Realment en els temps de Hertz no eistien condensadors i bobines i utilitzaven per exemple l'ampolla de Leiden
+  com a condensador i bobina. Actualment tenim condensadors i bobines electrònics que formen part tant dels mòbils per produir la freqüència de resonància
+  que produeixen una ona portadora i aquesta ona a sobre porta unes altres ones que son les de audio i video. L'anell de Hertz funciona igual només detecta
+  una freqúència de resonància perquè l'anell té un camp elèctric i magnètic que depèn del material de l'anell que és coure i el diàmetre i l'espai que hi ha buit de l'anell.</p>
+<p>La capacitat de un condensador es mesura en Farads que és la unitat del S.I. i que indica la quantitat de càrregues elèctriques emmagatemades entre dos plaques.
+La unitat de Farad és enorme i s'utilitzen unitats submúltiples </p>
+ <p>La fórmula d'un condensador és:</p>
+  $$C(capacitat)=\frac{Q(càrrega}{V(voltatge}$$
+  <p>La càrrega elèctrica d'un condensador té com a unitat el Coulomb i la capacitat d'emmagatzema 1 Coulomb en una diferència de potencial d'1 volt és 1 Farad. </p>
+  <p>La fórmula d'una bobina és:</p>
+  $$L=\frac{N^2S\mu}{l}$$
+  $$\text L= valor de la inductància (H) vol dir Henrys$$
+  $$\text N=Número de voltes o espires de la bobina(adimensional)$$
+  $$\text \mu= Permeabilitat del nucli (Wb/Am)Wb vol dir Weber(unitat de flux magnètic) dividit Ampere per metre$$
+  $$\text S=Secció del nucli$$
+  $$\text l=Longitud deles $$
+  <h1>Què fa una bobina al nostre context?</h1>
+  <p>En el nostre cas la bobina genera un camp magnètic que és molt important ja que en un futur generará un camp elèctric que detetarem. Sempre
+  que hi ha un camp magnètic hi ha un camp elèctric associat i al inrevès</p>
   </ol> 
 
 </body>
