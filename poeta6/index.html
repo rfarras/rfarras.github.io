@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Poeta Interactiu</title>
+<style>
+body { font-family:'Georgia',serif; max-width:800px; margin:0 auto; padding:20px; background:#f5f0e6; color:#333;}
+h1{text-align:center;color:#5d4037;font-size:2.5em;margin-bottom:10px;}
+.subtitle{text-align:center;color:#795548;font-style:italic;margin-bottom:20px;}
+.robot-icon{text-align:center;font-size:3em;margin:20px 0;transition:transform 0.3s;}
+.robot-icon.talking{transform:scale(1.2) rotate(-5deg);}
+button{background:#8d6e63;color:white;border:none;padding:12px 24px;font-size:18px;border-radius:5px;cursor:pointer;display:block;margin:20px auto;font-family:'Georgia',serif;transition:background 0.3s;}
+button:hover{background:#6d4c41;}
+#estat{padding:12px;border-radius:8px;text-align:center;font-weight:bold;margin:20px 0;font-style:italic;background:#fff3e0;transition:background 0.8s,color 0.8s;}
+.box{background:white;border-radius:12px;padding:20px;margin:20px 0;border-left:5px solid #8d6e63;box-shadow:0 4px 10px rgba(0,0,0,0.08);}
+.sentiment-box{text-align:center;font-size:1.2em;font-weight:bold;padding:15px;border-radius:10px;margin:20px 0;transition:background 0.8s,color 0.8s,border-color 0.8s;}
+.positiu{background:#e8f5e9;color:#2e7d32;border:2px solid #81c784;}
+.negatiu{background:#ffebee;color:#c62828;border:2px solid #ef9a9a;}
+.neutral{background:#f3e5f5;color:#7b1fa2;border:2px solid #ce93d8;}
+.poema{font-style:italic;line-height:1.8;text-align:center;padding:20px;background:#fff;border-radius:12px;border:2px dashed #8d6e63;margin:20px 0;}
+.poema .estrofa{margin:15px 0;}
+.poema .vers{margin:6px 0;opacity:0;transition:opacity 0.3s;}
+.poema .signatura{text-align:right;font-style:normal;font-weight:bold;color:#5d4037;margin-top:20px;}
+.controls{text-align:center;margin:20px 0;}
+.controls button{display:inline-block;margin:0 10px;padding:10px 20px;}
+#estilPoema{margin-top:10px;padding:5px 10px;font-size:16px;}
+</style>
+</head>
+<body>
+
+<div class="robot-icon">🤖✍️</div>
+<h1>Robot Poeta Interactiu</h1>
+<div class="subtitle">Cada paraula respira mentre la recito</div>
+
+<div class="controls">
+    <button onclick="start()">🎤 Parla amb mi</button>
+    <button onclick="reprodueixPoema()">🔊 Escolta el poema</button>
+    <br>
+    <label for="estilPoema">Estil de poema:</label>
+    <select id="estilPoema">
+        <option value="clàssic">Clàssic</option>
+        <option value="modern">Modern</option>
+        <option value="minimalista">Minimalista</option>
+    </select>
+</div>
+
+<div class="box">
+    <p><strong>Estat:</strong></p>
+    <div id="estat">🌬️ Escoltant el teu cor…</div>
+</div>
+
+<div class="box">
+    <p><strong>Les teves paraules:</strong></p>
+    <div id="resultat">Aquí apareixerà el que diguis...</div>
+</div>
+
+<div class="box">
+    <p><strong>Anàlisi de sentiments:</strong></p>
+    <div class="sentiment-box neutral" id="sentiment">Esperant les teves paraules...</div>
+</div>
+
+<div class="box">
+    <p><strong>Poema generat:</strong></p>
+    <div class="poema" id="poema"></div>
+</div>
+
+<script>
+const diccionariSentiments={"bo":2,"bé":2,"content":2,"feliç":3,"fantàstic":3,"dolent":-2,"malament":-2,"trist":-2,"horrible":-3,"problema":-1};
+let poemaActual="", sintesisVeu=null;
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.lang="ca-ES"; recognition.continuous=false; recognition.interimResults=false;
+
+function start(){
+    document.getElementById("estat").innerText="🎧 Escoltant el teu cor…";
+    recognition.start();
+}
+
+function analitzarSentiment(text){
+    return text.toLowerCase().split(/\s+/).reduce((acc,p)=>acc+(diccionariSentiments[p]||0),0);
+}
+
+function generarPoema(text,puntuacio){
+    let estrofes=[], titulo="", prefix="";
+    if(puntuacio>2){titulo="Oda a l'Alegria"; estrofes=[["El sol dansa al teu cor","el vent canta amb tu"],["Riu de llum s'estén","i el teu cor brilla"]]; prefix="☀️ ";}
+    else if(puntuacio>0){titulo="Sonet del Benestar"; estrofes=[["La calma flueix","un sospir suau recorre el dia"],["Tot sembla més lleu","el moment és música"]];}
+    else if(puntuacio>-1){titulo="Balada del Present"; estrofes=[["Les paraules flueixen suaus","ni gran goig ni clots"],["Equilibri precís","en el silenci amable"]];}
+    else if(puntuacio>-3){titulo="Elegia del Desassossec"; estrofes=[["Sento una ombra en el teu dir","fred suau que toca el cor"],["Però la llum espera","torna a guiar el teu pas"]];}
+    else{titulo="Càntic de la Melangia"; estrofes=[["Com pluja persistent","la tristesa mulla el parlar"],["Però el sol sempre torna","i amb ell, l'esperança brilla"]]; prefix="🌧️ ";}
+    return {prefix,titulo,estrofes};
+}
+
+function reprodueixPoema(){
+    if(!poemaActual){parla("Encara no he sentit les teves paraules per crear un poema."); return;}
+    // Llegir cada vers amb pausa
+    const versosEls=document.querySelectorAll('.vers');
+    let delay=0;
+    function parlarVers(i){
+        if(i>=versosEls.length) return;
+        const text=versosEls[i].innerText;
+        const utter=new SpeechSynthesisUtterance(text);
+        utter.lang="ca-ES"; utter.rate=0.9; utter.pitch=1.0;
+        utter.onstart=()=>document.querySelector('.robot-icon').classList.add('talking');
+        utter.onend=()=>{
+            document.querySelector('.robot-icon').classList.remove('talking');
+            setTimeout(()=>parlarVers(i+1),200); // pausa entre versos
+        };
+        window.speechSynthesis.speak(utter);
+        versosEls[i].style.opacity=1;
+    }
+    parlarVers(0);
+}
+
+recognition.onresult=function(e){
+    const text=e.results[0][0].transcript;
+    document.getElementById("resultat").innerText=text;
+
+    const puntuacio=analitzarSentiment(text);
+    const elemS=document.getElementById("sentiment");
+    let cls="neutral", txt="😐 Sentiment neutral";
+    if(puntuacio>3){cls="positiu"; txt="✨ Sentiment molt positiu";}
+    else if(puntuacio>0){cls="positiu"; txt="😊 Sentiment positiu";}
+    else if(puntuacio>-3){cls="negatiu"; txt="😔 Sentiment negatiu";}
+    else{cls="negatiu"; txt="😢 Sentiment molt negatiu";}
+    txt+=` (Puntuació: ${puntuacio})`;
+    elemS.innerText=txt; elemS.className="sentiment-box "+cls;
+
+    const poema=generarPoema(text,puntuacio);
+    poemaActual=poema.prefix+poema.titulo+"\n"+poema.estrofes.flat().join("\n")+"\n\n— Robot Poeta";
+
+    const elemP=document.getElementById("poema");
+    elemP.innerHTML="";
+    poema.estrofes.forEach(estrofa=>{
+        const estDiv=document.createElement("div"); estDiv.className="estrofa";
+        estrofa.forEach(v=>{
+            const vDiv=document.createElement("div"); vDiv.className="vers"; vDiv.innerText=v; estDiv.appendChild(vDiv);
+        });
+        elemP.appendChild(estDiv);
+    });
+    const sig=document.createElement("div"); sig.className="signatura"; sig.innerText="— Robot Poeta"; elemP.appendChild(sig);
+
+    // Mostrar primer vers inicialment
+    elemP.querySelectorAll('.vers').forEach(v=>v.style.opacity=0);
+
+    // Reproduir automàticament amb sincronització
+    setTimeout(()=>reprodueixPoema(),300);
+};
+
+recognition.onerror=function(e){document.getElementById("estat").innerText="❌ Error: "+e.error;};
+</script>
+</body>
+</html>
