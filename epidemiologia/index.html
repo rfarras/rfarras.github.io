@@ -235,10 +235,10 @@
                 r = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2 \sum (y_i - \bar{y})^2}} 
                 \]
                 \[
-                r_{\text{NO}_2,\text{incid}}(0) = 0.368 \quad (p < 0.0001,\; \text{significatiu ***})
+                r_{\text{NO}_X,\text{incid}}(0) = 0.450 \quad (p < 0.0001,\; \text{significatiu ***})
                 \]
             </div>
-            <p><strong>Interpretació:</strong> Existeix una correlació positiva moderada i altament significativa. A major concentració de NO₂, tendeix a augmentar la incidència diària d'infeccions respiratòries. El valor \(r=0.368\) explica aproximadament un \(12.5\%\) de la variabilitat compartida.</p>
+            <p><strong>Interpretació:</strong> Existeix una correlació positiva moderada i altament significativa. A major concentració de NO₂, tendeix a augmentar la incidència diària d'infeccions respiratòries. El valor \(r=0,450\) explica aproximadament un \(12.5\%\) de la variabilitat compartida.</p>
         </div>
 
         <!-- PAS 2 -->
@@ -260,7 +260,24 @@
                 AR\% = \frac{AR}{I_{\text{exposats}}} \times 100 = \frac{0.22}{1.76} \times 100 \approx 12.5\%
                 \]
             </div>
-            <p>Interval de confiança del 95% per al RR: \([1.14,\,1.17]\), \(p<0.001\).</p>
+           <p>Dividim els dies segons si el NO supera el valor guia diari de l'OMS (25 µg/m³):</p>
+            <ul style="margin: 15px 0 15px 30px;">
+                <li>🔴 <strong>Exposició alta</strong> (NO > 25): 727  dies, incidència mitjana = \(1.90 \) casos/1000</li>
+                <li>🟢 <strong>Exposició baixa</strong> (NO ≤ 25): 4383  dies, incidència mitjana = \(1.66 \) casos/1000</li>
+            </ul>
+            <div class="formula-block">
+                \[
+RR = \frac{I_{\text{exposats}}}{I_{\text{no exposats}}} = \frac{1.75}{1.66} \approx 1.05
+\]
+
+\[
+AR = I_{\text{exposats}} - I_{\text{no exposats}} = 1.75 - 1.66 = 0.09 \text{ casos/1000}
+\]
+
+\[
+AR\% = \frac{AR}{I_{\text{exposats}}} \times 100 = \frac{0.09}{1.75} \times 100 \approx 4.9\%
+\]
+            </div>
             <p><strong>Conclusió:</strong> RR > 1 indica un efecte nociu. El 12.5% de la incidència en dies amb NO₂ elevat és atribuïble a la superació del límit OMS, és a dir,atribuïm al contaminant no2 el 12,5% de les persones que van al CAP. Això equival a un excés de 0.22 casos per cada 1000 habitants i dia. </p>
         </div>
 
