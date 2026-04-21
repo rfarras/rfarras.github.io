@@ -380,6 +380,66 @@ AR\% = \frac{AR}{I_{\text{exposats}}} \times 100 = \frac{0.09}{1.75} \times 100 
             <p style="margin-top: 20px;">Els mesos d'hivern (gener-febrer) concentren els valors més alts tant de NO₂ com d'incidència, confirmant el patró estacional típic de les infeccions respiratòries agreujades per contaminació.</p>
         </div>
     </div>
+     <div class="step">
+            <div class="step-header">
+                <span class="step-num">6</span>
+                <span style="font-size: 1.4rem; font-weight: 600;">Model de Poisson (explicació bàsica)</span>
+            </div>
+
+            <p>El <strong>model de Poisson</strong> s’utilitza per calcular la probabilitat que passi un cert nombre d’esdeveniments en un interval de temps o espai.</p>
+
+            <ul style="margin: 15px 0 15px 30px;">
+                <li>📊 Exemple: nombre de casos en un dia</li>
+                <li>⏱️ Esdeveniments aleatoris però amb una mitjana fixa</li>
+            </ul>
+
+            <div class="formula-block">
+                \[
+                P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}
+                \]
+            </div>
+
+            <p><strong>On:</strong></p>
+            <ul style="margin: 10px 0 15px 30px;">
+                <li>\(\lambda\) = mitjana d’esdeveniments</li>
+                <li>\(k\) = nombre d’esdeveniments</li>
+                <li>\(e\) ≈ 2.718</li>
+                <li>\(k!\) = factorial</li>
+            </ul>
+
+            <p><strong>Interpretació:</strong> Aquest model ens diu la probabilitat que passin \(k\) casos en un dia si sabem que de mitjana en passen \(\lambda\).</p>
+
+            <div style="background: #e2eee7; border-radius: 20px; padding: 16px; margin-top: 15px;">
+                💡 <strong>Aplicació en aquest estudi:</strong> Podem utilitzar el model de Poisson per estimar la probabilitat de tenir un cert nombre d’infeccions respiratòries en un dia concret al Poblenou.Calculem la probabilitat que hi hagi k casos cada mil habitants si es un dia poc contaminat P (dies d'incidència baixa)o P'(dies d'alta incidència)
+            </div>
+        </div>
+
+              <!-- APLICACIÓ DEL MODEL DE POISSON AMB DADES REALS -->
+        <div class="step">
+            <div class="step-header">
+                <span class="step-num">7</span>
+                <span style="font-size: 1.4rem; font-weight: 600;">Aplicació del model de Poisson a les dades</span>
+            </div>
+
+            <p>Utilitzem la incidència mitjana observada com a valor de \(\lambda\):</p>
+
+            <div class="formula-block">
+                \[
+                \lambda = 1.51 \text{ casos per dia (per cada 1000 habitants)}
+                \]
+            </div>
+
+            <p>Volem calcular la probabilitat de tenir exactament <strong>k = 3 casos</strong> en un dia:</p>
+
+            <div class="formula-block">
+                \[
+                P(X = 3) = \frac{1.51^3 \cdot e^{-1.51}}{3!}
+                \]
+                \[
+                P(X = 3) \approx 0.125
+                \]
+            </div>
+
 
     <!-- RESUM FINAL I CONCLUSIONS -->
    <div class="card">
