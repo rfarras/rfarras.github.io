@@ -1,0 +1,182 @@
+<meta charset="UTF-8">
+  <title>Dashboard ESP32 + DHT22</title>
+
+  <!-- Chart.js per a la gràfica -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase SDK (App + Database) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: auto;
+      background: #020617;
+      color: #e5e7eb;
+      padding: 20px;
+    }
+    .card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      padding: 16px;
+      margin: 12px 0;
+      border-radius: 10px;
+    }
+    h1, h2 {
+      color: #38bdf8;
+    }
+    button {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin: 4px;
+      background: #38bdf8;
+      color: #020617;
+      font-weight: bold;
+    }
+    #status {
+      font-size: 1.1rem;
+      margin-top: 8px;
+    }
+    #status.online { color: #22c55e; }
+    #status.offline { color: #ef4444; }
+    #alertTemp { color: #f87171; font-weight: bold; }
+    #alertHum  { color: #fbbf24; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+
+  <h1>🌡️ Dashboard ESP32 + DHT22</h1>
+
+  <div class="card">
+    <h2>Estat del dispositiu</h2>
+    <div id="status">Carregant...</div>
+    <div id="lastSeen"></div>
+  </div>
+
+  <div class="card">
+    <h2>Lectures actuals</h2>
+    <h3>Temperatura: <span id="temp">--</span></h3>
+    <h3>Humitat: <span id="hum">--</span></h3>
+    <div id="alertTemp"></div>
+    <div id="alertHum"></div>
+  </div>
+
+  <div class="card">
+    <h2>Historial</h2>
+    <button onclick="setRange('1h')">1 hora</button>
+    <button onclick="setRange('24h')">24 hores</button>
+    <button onclick="setRange('all')">Tot</button>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <script>
+    // 1. Configuració Firebase
+    const firebaseConfig = {
+      apiKey: "API_KEY",
+      databaseURL: "https://PROJECT.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 2. Variables globals
+    let dataGlobal = {};
+    let range = "all";
+
+    // 3. Configuració de la gràfica
+    const ctx = document.getElementById("chart").getContext("2d");
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [
+          { label: "Temperatura (°C)", data: [], borderColor: "#38bdf8", tension: 0.2 },
+          { label: "Humitat (%)",     data: [], borderColor: "#fbbf24", tension: 0.2 }
+        ]
+      }
+    });
+
+    // 4. Filtrar dades per rang
+    function filterData(data) {
+      const now = Date.now() / 1000;
+      return Object.entries(data).filter(([t]) => {
+        t = Number(t);
+        if (range === "1h")  return now - t < 3600;
+        if (range === "24h") return now - t < 86400;
+        return true;
+      });
+    }
+
+    // 5. Actualitzar gràfica i textos
+    function update() {
+      const filtered = filterData(dataGlobal);
+      const labels = [];
+      const temps  = [];
+      const hums   = [];
+
+      filtered.forEach(([t, obj]) => {
+        labels.push(new Date(t * 1000).toLocaleTimeString());
+        temps.push(obj.temp);
+        hums.push(obj.hum);
+      });
+
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = temps;
+      chart.data.datasets[1].data = hums;
+      chart.update();
+
+      if (temps.length) {
+        const lastT = temps.at(-1);
+        const lastH = hums.at(-1);
+
+        document.getElementById("temp").innerText = lastT.toFixed(1) + " °C";
+        document.getElementById("hum").innerText  = lastH.toFixed(1) + " %";
+
+        document.getElementById("alertTemp").innerText =
+          lastT > 30 ? "⚠️ Temperatura massa alta!" : "";
+
+        document.getElementById("alertHum").innerText =
+          lastH > 70 ? "⚠️ Humitat massa alta!" : "";
+      }
+    }
+
+    // 6. Canviar rang
+    function setRange(r) {
+      range = r;
+      update();
+    }
+    window.setRange = setRange;
+
+    // 7. Estat del dispositiu
+    db.ref("sensor/status").on("value", snap => {
+      const status = snap.val();
+      const el = document.getElementById("status");
+      if (status === "online") {
+        el.innerText = "🟢 Online";
+        el.className = "online";
+      } else {
+        el.innerText = "🔴 Offline";
+        el.className = "offline";
+      }
+    });
+
+    db.ref("sensor/lastSeen").on("value", snap => {
+      const ts = snap.val();
+      if (!ts) return;
+      document.getElementById("lastSeen").innerText =
+        "Últim cop vist: " + new Date(ts * 1000).toLocaleString();
+    });
+
+    // 8. Lectura en temps real de l'historial
+    db.ref("sensor/history").on("value", snap => {
+      dataGlobal = snap.val() || {};
+      update();
+    });
+  </script>
+
+</body>
+</html>
