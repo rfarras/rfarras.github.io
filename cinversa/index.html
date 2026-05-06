@@ -116,13 +116,9 @@ function calculateAngles() {
 //getElementByld agafa (get) l'element que té l'identificador a1 i el guardarà a la variable a1. 
   let a2 = parseFloat(document.getElementById('a2').value);
 
-  let q1_deg = parseFloat(document.getElementById('q1').value); // Grados
+  let x = parseFloat(document.getElementById('x').value); // Grados
 
-  let q2_deg = parseFloat(document.getElementById('q2').value); // Grados
-
-  let q1 = q1_deg * Math.PI / 180; // Convertir graus a radians
-
-  let q2 = q2_deg * Math.PI / 180; // Convertir graus a radians
+  let y = parseFloat(document.getElementById('y').value); // Grados
 
 
   // **Mostrar els contenidors de sortida**
@@ -159,6 +155,8 @@ function calculateAngles() {
   let y1 = a1 * Math.sin(q1);
 
   let y2 = a2 * Math.sin(q1 + q2);
+
+  let d = Math.sqrt(x*x+y*y); //calculem amb pitàgores la distància de la hipotenusa del braç robòtic (x,y)
 
 
   output += "<div class='equation'>Desglossant els càlculs:</div>";
